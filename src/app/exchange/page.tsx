@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { baseUrl } from "../strings";
-import { useActiveAccount } from "thirdweb/react";
+import { ConnectButton, useActiveAccount } from "thirdweb/react";
+import { client } from "../client";
+import { polygonAmoy } from "thirdweb/chains";
 
 export default function CryptoExchange() {
   const address = useActiveAccount()?.address;
@@ -131,13 +133,30 @@ export default function CryptoExchange() {
             <option value="AirtelTigo">AirtelTigo</option>
           </select>
         </div>
-        <button
-          onClick={handleSubmit}
-          type="button"
-          className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Initiate Transaction
-        </button>
+        {address ? (
+          <button
+            onClick={handleSubmit}
+            type="button"
+            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Initiate Transaction
+          </button>
+        ) : (
+          <ConnectButton
+            client={client}
+            chain={polygonAmoy}
+            signInButton={{ label: "Sign In" }}
+            supportedTokens={{
+              80002: [
+                {
+                  name: "ftc",
+                  address: "0x852e64595771b938B970e1Dc87C69A0f66bb4dD4",
+                  symbol: "ftc",
+                },
+              ],
+            }}
+          />
+        )}
       </form>
       {transactionId && (
         <div className="mt-6 space-y-4">
