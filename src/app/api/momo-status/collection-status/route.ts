@@ -99,6 +99,7 @@ async function processTransaction(
     .eq("transactionId", transactionId)
     .single();
 
+  console.log("supabase data",data)
   const address = data.address;
 
   // const address =
