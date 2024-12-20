@@ -1,4 +1,4 @@
-export const Variables = {
+export const Strings = {
   contractAddress: String(process.env.NEXT_PUBLIC_ICO_CONTRACT),
 };
 
