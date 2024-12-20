@@ -3,7 +3,6 @@ import { chainId } from "@/app/chain";
 import { NextRequest, NextResponse } from "next/server";
 import { toWei } from "thirdweb";
 import { isAddress } from "thirdweb";
-import { useActiveAccount } from "thirdweb/react";
 import { supabase } from "@/utils/supabase-server";
 
 const {
