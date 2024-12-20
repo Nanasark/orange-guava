@@ -95,12 +95,13 @@ async function processTransaction(
 ) {
   const { data, error } = await supabase
     .from("objects")
-    .select("*")
+    .select("address")
     .eq("transactionId", transactionId)
     .single();
 
-  console.log("supabase data",data)
-  const address = data.address;
+  console.log("supabase data", data)
+  
+  const address = data?.address;
 
   // const address =
   //   statusData.data?.accountName && isAddress(statusData.data.accountName)
