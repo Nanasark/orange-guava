@@ -130,6 +130,9 @@ export default function CryptoExchange() {
               </select>
             </div>
           </div>
+          <p className="mt-4 text-sm text-blue-600">
+            You are paying {payingAmount} GHS at rate of 20GHS per token
+          </p>
 
           <div>
             {address ? (
