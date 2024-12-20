@@ -36,6 +36,8 @@ if (
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    const payload = req.body; 
+        console.log("Received callback:", payload);
     console.log("Received callback payload:", body);
 
     const { transactionId } = body;
