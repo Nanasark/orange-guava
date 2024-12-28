@@ -12,7 +12,7 @@ export async function GET(
     const { data: merchantData, error: merchantError } = await supabase
       .from("merchants")
       .select("*")
-      .eq("address", merchantId)
+      .eq("id", merchantId)
       .single(); // Fetch a single merchant by ID
 
     if (merchantError) {
@@ -23,7 +23,7 @@ export async function GET(
     const { data: networksData, error: networksError } = await supabase
       .from("networks")
       .select("*")
-      .eq("address", merchantId); // Fetch networks for the merchant
+      .eq("merchant_id", merchantId); // Fetch networks for the merchant
 
     if (networksError) {
       throw new Error(networksError.message);
