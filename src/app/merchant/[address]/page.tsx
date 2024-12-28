@@ -7,7 +7,7 @@ import BuyCryptoForm from "../../../components/BuyCryptoForm";
 import SellCryptoForm from "../../../components/SellCryptoForm";
 
 export default function MerchantDetails() {
-  const { merchant: merchantId } = useParams(); // Get merchantId from the URL params
+  const { address: merchantId } = useParams(); // Get merchantId from the URL params
   const [merchant, setMerchant] = useState<any>(null);
   const [networks, setNetworks] = useState<any[]>([]);
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
