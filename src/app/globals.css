@@ -20,3 +20,9 @@
 		@apply bg-zinc-950 text-neutral-200;
 	}
 }
+
+
+.connect{
+	background-color: black !important;
+	color: beige !important;
+}

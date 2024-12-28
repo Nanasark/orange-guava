@@ -11,6 +11,131 @@ export const ICOABI = [
     type: "constructor",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "merchantReward",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "ownerReward",
+        type: "uint256",
+      },
+    ],
+    name: "CryptoPurchasedWithFiat",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "fee",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "merchantReward",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "ownerReward",
+        type: "uint256",
+      },
+    ],
+    name: "CryptoSoldForFiat",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "MERCHANT_SHARE",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "OWNER_SHARE",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "PERIOD_DURATION",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "address",
@@ -43,6 +168,120 @@ export const ICOABI = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+    ],
+    name: "buyCryptoWithFiat",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+    ],
+    name: "buyFiatWithCrypto",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "calculateFee",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "claimRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "endPeriodAndDistributeRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllMerchants",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bool",
+            name: "isRegistered",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "stakedBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "rewardBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "merchant",
+            type: "address",
+          },
+        ],
+        internalType: "struct BuyCryptoPlatform.Merchant[]",
+        name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "getContractTokenBalance",
     outputs: [
@@ -58,14 +297,146 @@ export const ICOABI = [
   {
     inputs: [
       {
+        internalType: "address",
+        name: "merchantAddress",
+        type: "address",
+      },
+    ],
+    name: "getMerchantByAddress",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bool",
+            name: "isRegistered",
+            type: "bool",
+          },
+          {
+            internalType: "uint256",
+            name: "stakedBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "uint256",
+            name: "rewardBalance",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "merchant",
+            type: "address",
+          },
+        ],
+        internalType: "struct BuyCryptoPlatform.Merchant",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+    ],
+    name: "getMerchantRewardBalance",
+    outputs: [
+      {
         internalType: "uint256",
-        name: "amount",
+        name: "",
         type: "uint256",
       },
     ],
-    name: "outToken",
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+    ],
+    name: "getMerchantStakedBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getTotalStakedBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "merchantList",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "merchants",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "isRegistered",
+        type: "bool",
+      },
+      {
+        internalType: "uint256",
+        name: "stakedBalance",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "rewardBalance",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "merchant",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -79,6 +450,32 @@ export const ICOABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "periodStartTime",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_merchant",
+        type: "address",
+      },
+    ],
+    name: "registerMerchant",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -97,19 +494,27 @@ export const ICOABI = [
   {
     inputs: [
       {
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
         internalType: "uint256",
         name: "amount",
         type: "uint256",
       },
     ],
-    name: "send",
+    name: "stakeTokens",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "totalFeesCollected",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -121,6 +526,32 @@ export const ICOABI = [
       },
     ],
     name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "unstakeTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "withdrawOwnerFees",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

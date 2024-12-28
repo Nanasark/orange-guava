@@ -5,6 +5,7 @@ import { ConnectButton } from "thirdweb/react";
 import { client } from "@/app/client";
 import { polygonAmoy } from "thirdweb/chains";
 import Link from "next/link";
+import ConnectWallet from "./connectWallet";
 
 export default function Header() {
   return (
@@ -24,19 +25,7 @@ export default function Header() {
           >
             P2P Exchange
           </Link>
-          <ConnectButton
-            client={client}
-            chain={polygonAmoy}
-            supportedTokens={{
-              80002: [
-                {
-                  name: "usdc",
-                  address: "0x852e64595771b938B970e1Dc87C69A0f66bb4dD4",
-                  symbol: "usdc",
-                },
-              ],
-            }}
-          />
+          <ConnectWallet/>
         </nav>
       </div>
     </header>
