@@ -116,15 +116,15 @@ export default function Profile() {
               </p>
               <p className="mb-2">
                 <span className="font-medium">Staked Balance:</span>{" "}
-                {merchant.stakedBalance} USDT
+                {merchant.stakedBalance} USDC
               </p>
               <p className="mb-2">
                 <span className="font-medium">Reward Balance:</span>{" "}
-                {merchant.rewardBalance} USDT
+                {merchant.rewardBalance} USDC
               </p>
               <p className="mb-2">
                 <span className="font-medium">Available Balance:</span>{" "}
-                {merchant.availableBalance} USDT
+                {merchant.availableBalance} USDC
               </p>
               <p>
                 <span className="font-medium">Available Fiat:</span> $

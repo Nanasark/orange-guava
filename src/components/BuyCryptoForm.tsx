@@ -8,6 +8,7 @@ import {
   FaUser,
   FaNetworkWired,
 } from "react-icons/fa";
+import { baseUrl } from "@/app/strings";
 import {
   ConnectButton,
   useActiveAccount,
@@ -56,7 +57,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           },
           amount: parseFloat(payingAmount),
           currency: "GHS",
-          callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/momo-status/collection-status`,
+          callbackUrl: `${baseUrl}/api/momo-status/collection-status`,
           address: address,
           merchantAddress: merchantAddress,
         }),
