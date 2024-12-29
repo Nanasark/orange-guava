@@ -18,10 +18,11 @@ import { polygonAmoy } from "thirdweb/chains";
 import { contract } from "@/app/contract";
 
 interface BuyCryptoFormProps {
-  merchantId: number;
+  merchantAddress: string;
 }
 
-export default function BuyCryptoForm({ merchantId }: BuyCryptoFormProps) {
+
+export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -57,6 +58,7 @@ export default function BuyCryptoForm({ merchantId }: BuyCryptoFormProps) {
           currency: "GHS",
           callbackUrl: `${process.env.NEXT_PUBLIC_BASE_URL}/api/momo-status/collection-status`,
           address: address,
+          merchantAddress: merchantAddress,
         }),
       });
       const data = await response.json();

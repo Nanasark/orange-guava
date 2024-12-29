@@ -10,3 +10,9 @@ export const contract = getContract({
   client: client,
   abi: ICOABI,
 });
+
+export const tokenContract = getContract({
+  address: "0x61db8048005919076645c82bB871ee321366Dd31",
+  chain: chain,
+  client: client,
+});

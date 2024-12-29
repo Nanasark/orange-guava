@@ -36,8 +36,8 @@ if (
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const payload = req.body; 
-        console.log("Received callback:", payload);
+    const payload = req.body;
+    console.log("Received callback:", payload);
     console.log("Received callback payload:", body);
 
     const { transactionId } = body;
@@ -96,13 +96,14 @@ async function processTransaction(
 ) {
   const { data, error } = await supabase
     .from("collection")
-    .select("address")
+    .select("address, merchantAddress")
     .eq("transactionId", transactionId)
     .single();
 
   console.log("supabase data", data);
 
   const address = data?.address;
+  const merchantAddress = data?.merchantAddress;
 
   // const address =
   //   statusData.data?.accountName && isAddress(statusData.data.accountName)
@@ -137,8 +138,12 @@ async function processTransaction(
             "x-backend-wallet-address": BACKEND_WALLET_ADDRESS!,
           },
           body: JSON.stringify({
-            functionName: "send",
-            args: [`${address}`, sendingAmount.toString()],
+            functionName: "buyCryptoWithFiat",
+            args: [
+              `${address}`,
+              sendingAmount.toString(),
+              `${merchantAddress}`,
+            ],
           }),
         }
       );

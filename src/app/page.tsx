@@ -7,21 +7,27 @@ import SellCryptoCard from "../components/SellCryptoCard";
 import Link from "next/link";
 import { contract } from "./contract";
 import { useReadContract } from "thirdweb/react";
-import { supabase } from "@/utils/supabase-server";
+import { useMerchantsData } from "@/hooks/useMerchantsData";
 
 export default function Dashboard() {
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
 
-  // Fetch merchants from the smart contract
-  const {
-    data: merchants,
-    isLoading,
-    error,
-  } = useReadContract({
-    contract,
-    method: "getAllMerchants",
-  });
+   const { allMerchants, isLoading, error } = useMerchantsData();
 
+  // Handle loading, error, and display of merchants
+  const renderMerchants = () => {
+    if (isLoading) {
+      return <div>Loading merchants...</div>;
+    }
+    if (error) {
+      return <div>Error: {error.message}</div>;
+    }
+    if (allMerchants.length === 0) {
+      return <div>No merchants available.</div>;
+    }
+  }
+  console.log(allMerchants[0]);
+  console.log(allMerchants.length);
   return (
     <div className="min-h-screen bg-blue-50">
       <div className="container mx-auto px-4 py-8">
@@ -62,7 +68,7 @@ export default function Dashboard() {
           <p className="text-center text-red-500">Error loading merchants</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {merchants?.map((merchant, index) =>
+            {allMerchants.map((merchant, index) =>
               isBuyCrypto ? (
                 <BuyCryptoCard key={index} merchant={merchant} />
               ) : (

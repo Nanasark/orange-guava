@@ -1,44 +1,57 @@
-// app/api/merchant/[merchantId]/route.ts
 import { supabase } from "@/utils/supabase-server";
 
 export async function GET(
   request: Request,
   { params }: { params: { merchantId: string } }
 ) {
-  const { merchantId } = params; // Get merchantId from URL params
+  const { merchantId } = params; // Extract merchantId from URL params
 
   try {
     // Fetch merchant data
     const { data: merchantData, error: merchantError } = await supabase
       .from("merchants")
       .select("*")
-      .eq("id", merchantId)
+      .eq("address", merchantId)
       .single(); // Fetch a single merchant by ID
 
     if (merchantError) {
-      throw new Error(merchantError.message);
+      if (
+        merchantError.message ===
+        "JSON object requested, multiple (or no) rows returned"
+      ) {
+        console.warn(`No merchant found for address: ${merchantId}`);
+      } else {
+        throw new Error(`Error fetching merchant: ${merchantError.message}`);
+      }
     }
 
     // Fetch the networks related to the merchant
     const { data: networksData, error: networksError } = await supabase
       .from("networks")
       .select("*")
-      .eq("merchant_id", merchantId); // Fetch networks for the merchant
+      .eq("address", merchantId); // Fetch networks for the merchant
 
     if (networksError) {
-      throw new Error(networksError.message);
+      console.warn(`Error fetching networks for merchant: ${merchantId}`);
     }
 
-    // Return the merchant data and networks in a JSON response
+    // Prepare response with default values for missing data
     return new Response(
       JSON.stringify({
-        merchant: merchantData,
-        networks: networksData,
+        merchant: merchantData || {
+          address: merchantId,
+          business_name: "Unknown Merchant",
+          description: "No data available",
+          email: "N/A",
+          phone_number: "N/A",
+          created_at: null,
+        },
+        networks: networksData || [],
       }),
       { status: 200 }
     );
-  } catch (error:any) {
-    // Handle errors
+  } catch (error: any) {
+    console.error(`Error fetching merchant or network data: ${error.message}`);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
     });

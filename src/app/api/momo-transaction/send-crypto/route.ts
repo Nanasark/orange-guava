@@ -15,6 +15,7 @@ interface RequestData {
   currency: string;
   callbackUrl: string;
   address: string;
+  merchantAddress: string;
 }
 
 const {
@@ -40,7 +41,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const data: RequestData = await request.json();
-    const { customer, amount, currency, callbackUrl, address } = data;
+    const {
+      customer,
+      amount,
+      currency,
+      callbackUrl,
+      address,
+      merchantAddress,
+    } = data;
     console.log(TRANSACT_SECRET_KEY);
     const response = await fetch(
       "https://sandbox.offgridlabs.org/collections/mobile-money",
@@ -68,15 +76,16 @@ export async function POST(request: NextRequest) {
       const transactionId = responseData.data.transactionId;
       const metadata = {
         transactionId: `${transactionId}`,
-        address: `${address}`
-      }
+        address: `${address}`,
+        amount: `GHS ${amount}.00`,
+        merchantAddress: `${merchantAddress}`,
+      };
 
       const { data, error } = await supabase
-        .from("collection") // Make sure this matches your table name
+        .from("collection")
         .insert(metadata)
         .select()
         .single();
-      
 
       return NextResponse.json({
         success: true,

@@ -2,14 +2,35 @@
 
 import { useState } from "react";
 import { FaWallet, FaMoneyBillWave } from "react-icons/fa";
+import {
+  useActiveAccount,
+  useSendBatchTransaction,
+  useSendTransaction,
+} from "thirdweb/react";
+import {
+  prepareContractCall,
+  PreparedTransaction,
+  sendTransaction,
+  toWei,
+} from "thirdweb";
+import { approve } from "thirdweb/extensions/erc20";
+import { Strings } from "../strings";
+import { contract, tokenContract } from "../contract";
 
 export default function Profile() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [fiatAmount, setFiatAmount] = useState("");
-
-  // Placeholder wallet address
-  const walletAddress = "0x1234...5678";
+  const { mutateAsync: sendTx } = useSendTransaction();
+  const account = useActiveAccount();
+  const address = account ? account.address : "";
+  let Account: any;
+  if (account) {
+    Account = account;
+  }
+  const { mutate: sendBatchTransaction, error: txError } =
+    useSendBatchTransaction();
+  const walletAddress = address;
 
   // Placeholder merchant data
   const merchant = {
@@ -20,10 +41,38 @@ export default function Profile() {
     availableFiat: 20000,
   };
 
-  const handleStake = (e: React.FormEvent) => {
+  const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for staking logic
-    console.log("Staking:", stakeAmount);
+    try {
+      const approval = approve({
+        contract: tokenContract,
+        spender: Strings.contractAddress,
+        amount: stakeAmount,
+      });
+      const stake = prepareContractCall({
+        contract,
+        method: "stakeTokens",
+        params: [toWei(stakeAmount)],
+      }) as PreparedTransaction;
+
+      const tx = sendBatchTransaction([approval, stake], Account);
+      // const approval =
+      // await sendTransaction({ transaction: approval, account: Account });
+
+      // const transaction = (await prepareContractCall({
+      //   contract,
+      //   method: "stakeTokens",
+      //   params: [toWei(stakeAmount)],
+      // })) as PreparedTransaction;
+
+      // await sendTx(transaction);
+      console.log(tx);
+    } catch (error) {
+      console.log(txError);
+    }
+
+    // // Placeholder for staking logic
+    // console.log("Staking:", stakeAmount);
   };
 
   const handleUnstake = (e: React.FormEvent) => {

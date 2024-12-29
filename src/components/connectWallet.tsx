@@ -11,9 +11,10 @@ export default function ConnectWallet() {
         supportedTokens={{
           80002: [
             {
-              name: "usdc",
-              address: "0x852e64595771b938B970e1Dc87C69A0f66bb4dD4",
-              symbol: "usdc",
+              name: "USD Coin",
+              address: "0x61db8048005919076645c82bB871ee321366Dd31",
+              symbol: "USDC",
+              icon: "/usdc.png",
             },
           ],
         }}

@@ -14,7 +14,12 @@ export default function Register() {
   const account = useActiveAccount();
   const address = account ? account.address : "";
 
-  // const { mutateAsync: sendTx, isSuccess } = useSendTransaction();
+  const {
+    mutateAsync: sendTx,
+    isSuccess,
+    status,
+    error: txError,
+  } = useSendTransaction();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [businessName, setBusinessName] = useState("");
@@ -25,13 +30,13 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // const transaction = prepareContractCall({
-      //   contract,
-      //   method: "registerMerchant",
-      //   params: [address],
-      // }) as PreparedTransaction;
+      const transaction = prepareContractCall({
+        contract,
+        method: "registerMerchant",
+        params: [address],
+      }) as PreparedTransaction;
 
-      // await sendTx(transaction);
+      await sendTx(transaction);
 
       // const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
@@ -40,7 +45,7 @@ export default function Register() {
       //   formattedPhoneNumber
       // );
 
-      // if (isSuccess) {
+      if (status == "success") {
         const response = await fetch("/api/merchant/register", {
           method: "POST",
           headers: {
@@ -60,8 +65,37 @@ export default function Register() {
         if (data.success) {
           alert(`${businessName} registered successfully`);
         }
-      // }
-    } catch (error) {}
+      } else if (status == "error") {
+        if (
+          (txError.message =
+            "Error - Already registered contract: 0xc0785378991C2A4eb1057bA462b71BA6348dfCA0 chainId: 80002")
+        ) {
+          const response = await fetch("/api/merchant/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              firstName,
+              lastName,
+              businessName,
+              businessDescription,
+              address,
+              email,
+              phoneNumber,
+            }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            alert(`${businessName} registered successfully`);
+          }
+        } else {
+          alert(txError);
+        }
+      }
+    } catch (error) {
+      console.log(txError?.message);
+    }
   };
 
   return (

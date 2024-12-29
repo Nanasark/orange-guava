@@ -6,9 +6,9 @@ import { supabase } from "@/utils/supabase-server";
 interface SellCryptoCardProps {
   merchant: {
     isRegistered: boolean;
-    stakedBalance: bigint;
-    rewardBalance: bigint;
-    merchant: string;
+    stakedBalance: string;
+    rewardBalance: string;
+    merchantAddress: string;
   };
 }
 
@@ -22,7 +22,7 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
     async function fetchMerchantData() {
       try {
         // Fetch merchant data from the API
-        const response = await fetch(`/api/merchant/details/${merchant}`);
+        const response = await fetch(`/api/merchant/details/${merchant.merchantAddress}`);
         const data = await response.json();
 
         if (data.error) {
@@ -39,13 +39,13 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
     }
 
     fetchMerchantData();
-  }, [merchant]); // Run when merchantId changes
+  }, [merchant.merchantAddress]); // Run when merchantId changes
 
   if (loading) {
     return <div>Loading...</div>; // Display loading state while fetching data
   }
 
-  if (!merchant) {
+  if (!merchant.merchantAddress) {
     return <div>No merchant data found.</div>; // Display error if merchant data is not found
   }
 
@@ -54,11 +54,11 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
   const enabledNetworks = networks.filter((network) => network.enabled);
 
   return (
-    <Link href={`/merchant/${merchant.merchant}`}>
+    <Link href={`/merchant/${merchant.merchantAddress}`}>
       <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-300 border border-blue-200">
         {/* Merchant Name */}
         <h2 className="text-xl font-semibold text-blue-600 mb-4">
-          {merchantInfo.business_name}
+          {merchantInfo.businessName}
         </h2>
 
         {/* Available Fiat */}
@@ -76,7 +76,7 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
               {enabledNetworks.map((network) => (
                 <li key={network.id} className="text-sm">
                   <FaNetworkWired className="inline mr-2 text-blue-500" />
-                  {network.name}
+                  {network.provider}
                 </li>
               ))}
             </ul>
@@ -89,14 +89,14 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
         <div className="mt-4">
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Contact:</span>{" "}
-            {merchantInfo.first_name} {merchantInfo.last_name}
+            {merchantInfo.firstName} {merchantInfo.lastName}
           </p>
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Email:</span> {merchantInfo.email}
           </p>
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Phone:</span>{" "}
-            {merchantInfo.phone_number}
+            {merchantInfo.phoneNumber}
           </p>
         </div>
 

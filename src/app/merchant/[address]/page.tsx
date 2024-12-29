@@ -5,10 +5,10 @@ import { useParams } from "next/navigation";
 import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import BuyCryptoForm from "../../../components/BuyCryptoForm";
 import SellCryptoForm from "../../../components/SellCryptoForm";
-
+import { MerchantInfo } from "@/utils/merchant.type";
 export default function MerchantDetails() {
   const { address: merchantId } = useParams(); // Get merchantId from the URL params
-  const [merchant, setMerchant] = useState<any>(null);
+  const [merchantInfo, setmerchantInfo] = useState<MerchantInfo>();
   const [networks, setNetworks] = useState<any[]>([]);
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
   const [loading, setLoading] = useState(true);
@@ -25,7 +25,7 @@ export default function MerchantDetails() {
           throw new Error(data.error);
         }
 
-        setMerchant(data.merchant);
+        setmerchantInfo(data.merchant);
         setNetworks(data.networks);
       } catch (error) {
         console.error("Error fetching merchant or network data:", error);
@@ -41,7 +41,7 @@ export default function MerchantDetails() {
     return <div>Loading...</div>; // Display loading state while fetching data
   }
 
-  if (!merchant) {
+  if (!merchantInfo) {
     return <div>No merchant data found.</div>; // Display error if merchant data is not found
   }
 
@@ -53,7 +53,7 @@ export default function MerchantDetails() {
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-8 border border-blue-200">
           <h1 className="text-3xl font-bold text-blue-600 mb-8">
-            {merchant.business_name}
+            {merchantInfo.businessName}
           </h1>
 
           <div className="grid md:grid-cols-2 gap-8 mb-8">
@@ -63,19 +63,19 @@ export default function MerchantDetails() {
               </h2>
               <p className="mb-2">
                 <span className="font-medium">Description:</span>{" "}
-                {merchant.description}
+                {merchantInfo.businessDescription}
               </p>
               <p className="mb-2">
-                <span className="font-medium">Email:</span> {merchant.email}
+                <span className="font-medium">Email:</span> {merchantInfo.email}
               </p>
               <p className="mb-2">
                 <span className="font-medium">Phone:</span>{" "}
-                {merchant.phone_number}
+                {merchantInfo.phoneNumber}
               </p>
 
-              <p className="mb-2">
+              {/* <p className="mb-2">
                 <span className="font-medium">Available Crypto:</span>{" "}
-                {merchant.available_crypto} USDT
+                {merchantInfo.available_crypto} USDT
               </p>
               <p className="mb-2">
                 <span className="font-medium">Available Fiat:</span> $
@@ -83,8 +83,8 @@ export default function MerchantDetails() {
               </p>
               <p>
                 <span className="font-medium">Total Transactions:</span>{" "}
-                {merchant.total_transactions}
-              </p>
+                {merchantInfo.total_transactions}
+              </p> */}
             </div>
 
             <div>
@@ -105,12 +105,13 @@ export default function MerchantDetails() {
                 </button>
               </div>
               {isBuyCrypto ? (
-                <BuyCryptoForm merchantId={merchant.id} />
+                <BuyCryptoForm merchantAddress={merchantInfo.address} />
               ) : (
-                <SellCryptoForm
-                  merchantId={merchant.id}
-                  availableFiat={merchant.available_fiat}
-                />
+                // <SellCryptoForm
+                //   merchantId={merchantInfo.address}
+                //   availableFiat={merchantInfo.available_fiat}
+                // />
+                <div>Sell crypto form update soon</div>
               )}
             </div>
           </div>
