@@ -22,7 +22,6 @@ interface BuyCryptoFormProps {
   merchantAddress: string;
 }
 
-
 export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
