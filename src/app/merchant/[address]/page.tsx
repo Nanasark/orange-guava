@@ -107,11 +107,11 @@ export default function MerchantDetails() {
               {isBuyCrypto ? (
                 <BuyCryptoForm merchantAddress={merchantInfo.address} />
               ) : (
-                // <SellCryptoForm
-                //   merchantId={merchantInfo.address}
-                //   availableFiat={merchantInfo.available_fiat}
-                // />
-                <div>Sell crypto form update soon</div>
+                <SellCryptoForm
+                 merchantAddress={merchantInfo.address}
+                  // availableFiat={merchantInfo.available_fiat}
+                />
+                // <div>Sell crypto form update soon</div>
               )}
             </div>
           </div>
