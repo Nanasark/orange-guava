@@ -79,6 +79,7 @@ export default function SellCryptoForm({
     fetchAllowance();
   }, [address, tokenContract]);
   const formatedNumber = formatPhoneNumber(phoneNumber);
+  const buyingAmount = Number(amount) * 20;
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
@@ -106,6 +107,7 @@ export default function SellCryptoForm({
         if (sellStatus === "success" || sellError === null) {
           try {
             const response = fetch("/api/momo-transaction/send-fiat", {
+              method: "POST",
               body: JSON.stringify({
                 receiver: {
                   phoneNumber: formatedNumber,
@@ -114,7 +116,7 @@ export default function SellCryptoForm({
                     provider,
                   },
                 },
-                amount: amount,
+                amount: buyingAmount,
                 currency: "GHS",
                 callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
                 walletId: "60f4f0e0d6c8f0001f000001",
@@ -148,7 +150,7 @@ export default function SellCryptoForm({
             htmlFor="sellAmount"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Amount (USDT)
+            Amount (USDC)
           </label>
           <div className="relative">
             <input
@@ -156,8 +158,8 @@ export default function SellCryptoForm({
               id="sellAmount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-2 pr-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="Enter USDT amount"
+              className="w-full p-2 pr-10 border text-blue-800 border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              placeholder="Enter USDC amount"
               required
             />
             <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
@@ -168,7 +170,7 @@ export default function SellCryptoForm({
         <div>
           <label
             htmlFor="phoneNumber"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-800 mb-2"
           >
             Phone Number
           </label>
@@ -177,7 +179,7 @@ export default function SellCryptoForm({
             id="phoneNumber"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            className="w-full p-2 border text-blue-800 border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
             placeholder="Enter phone number"
             required
           />
@@ -185,7 +187,7 @@ export default function SellCryptoForm({
         <div>
           <label
             htmlFor="accountName"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-gray-800 mb-2"
           >
             Account Name
           </label>
@@ -194,7 +196,7 @@ export default function SellCryptoForm({
             id="accountName"
             value={accountName}
             onChange={(e) => setAccountName(e.target.value)}
-            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            className="w-full p-2 border text-blue-800 border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
             placeholder="Enter account name"
             required
           />
@@ -202,7 +204,7 @@ export default function SellCryptoForm({
         <div>
           <label
             htmlFor="provider"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium  text-gray-800 mb-2"
           >
             Provider
           </label>
@@ -210,14 +212,24 @@ export default function SellCryptoForm({
             id="provider"
             value={provider}
             onChange={(e) => setProvider(e.target.value)}
-            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            className="w-full p-2 border text-blue-800 border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
             required
           >
-            <option value="">Select Network Provider</option>
-            <option value="MTN">MTN</option>
-            <option value="AIRTEL">AIRTEL</option>
-            <option value="VODAFONE">VODAFONE</option>
-            <option value="TIGO">TIGO</option>
+            <option className="text-blue-900" value="">
+              Select Network Provider
+            </option>
+            <option className="text-blue-900" value="MTN">
+              MTN
+            </option>
+            <option className="text-blue-900" value="AIRTEL">
+              AIRTEL
+            </option>
+            <option className="text-blue-900" value="VODAFONE">
+              VODAFONE
+            </option>
+            <option className="text-blue-900" value="TIGO">
+              TIGO
+            </option>
           </select>
         </div>
         <div>

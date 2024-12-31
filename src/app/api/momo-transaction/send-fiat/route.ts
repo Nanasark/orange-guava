@@ -69,16 +69,16 @@ export async function POST(request: NextRequest) {
           walletId,
           currency,
           callbackUrl,
-       
         }),
       }
     );
+
+    console.log("receiver:", receiver);
 
     const responseData = await response.json();
     console.log(responseData);
 
     if (response.ok) {
-      
       const metadata = {
         receiver: JSON.stringify(receiver),
         amount: `${currency} ${amount}`,

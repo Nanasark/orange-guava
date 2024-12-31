@@ -75,7 +75,7 @@ export default function MerchantDetails() {
 
               {/* <p className="mb-2">
                 <span className="font-medium">Available Crypto:</span>{" "}
-                {merchantInfo.available_crypto} USDT
+                {merchantInfo.available_crypto} USDC
               </p>
               <p className="mb-2">
                 <span className="font-medium">Available Fiat:</span> $

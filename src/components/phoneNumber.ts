@@ -1,6 +1,6 @@
 export const formatPhoneNumber = (number: string) => {
   // Remove any non-digit characters except '+'
-  const cleanNumber = number.replace(/[^\\d+]/g, "");
+  const cleanNumber = number.replace(/[^\d+]/g, "");
 
   // Check if the number starts with '+233'
   if (cleanNumber.startsWith("+233")) {
