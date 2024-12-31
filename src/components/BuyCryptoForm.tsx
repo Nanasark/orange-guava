@@ -17,11 +17,12 @@ import {
 import { client } from "@/app/client";
 import { polygonAmoy } from "thirdweb/chains";
 import { contract } from "@/app/contract";
+import { formatPhoneNumber } from "./phoneNumber";
+import ConnectWallet from "./connectWallet";
 
 interface BuyCryptoFormProps {
   merchantAddress: string;
 }
-
 
 export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
@@ -31,17 +32,21 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const [network, setNetwork] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // const { data: merchant } = useReadContract({
   //   contract,
   //   method: "getAllMerchants",
   // });
 
+  const formattedPhone = formatPhoneNumber(phoneNumber);
   const ghsRate = 20;
   const payingAmount = (Number(amount) * ghsRate).toString();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const response = await fetch("/api/momo-transaction/send-crypto", {
         method: "POST",
@@ -51,7 +56,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         },
         body: JSON.stringify({
           customer: {
-            phoneNumber: `+${phoneNumber}`,
+            phoneNumber: formattedPhone,
             accountName: address,
             network,
           },
@@ -190,23 +195,10 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
             >
               <FaExchangeAlt className="mr-2" />
-              Initiate Transaction
+              {loading ? "Processing..." : "Initiate Transaction"}
             </button>
           ) : (
-            <ConnectButton
-              client={client}
-              chain={polygonAmoy}
-              signInButton={{ label: "Sign In" }}
-              supportedTokens={{
-                80002: [
-                  {
-                    name: "usdc",
-                    address: "0x852e64595771b938B970e1Dc87C69A0f66bb4dD4",
-                    symbol: "usdc",
-                  },
-                ],
-              }}
-            />
+            <ConnectWallet />
           )}
         </div>
       </form>
