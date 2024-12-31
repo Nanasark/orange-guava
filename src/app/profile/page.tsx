@@ -55,7 +55,7 @@ export default function Profile() {
         params: [toWei(stakeAmount)],
       }) as PreparedTransaction;
 
-      const tx = sendBatchTransaction([approval, stake], Account);
+      await sendBatchTransaction([approval, stake], Account);
       // const approval =
       // await sendTransaction({ transaction: approval, account: Account });
 
@@ -66,7 +66,7 @@ export default function Profile() {
       // })) as PreparedTransaction;
 
       // await sendTx(transaction);
-      console.log(tx);
+     
     } catch (error) {
       console.log(txError);
     }

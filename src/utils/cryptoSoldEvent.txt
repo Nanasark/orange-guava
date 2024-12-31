@@ -1,0 +1,36 @@
+ const { data: contractEvent } = useContractEvents({
+    contract,
+  });
+
+  const recentEvent = contractEvent ? contractEvent[0].args : "";
+  const allEventArgs = contractEvent
+    ? contractEvent.map((event) => event.args)
+    : [];
+  const specialEvent =
+    contractEvent &&
+    contractEvent
+      .filter((event) => {
+        const args = event.args as unknown; // Treat as unknown first
+
+        // Check if the required properties exist and are of the expected types
+        if (
+          typeof (args as EventArgs).amount === "bigint" &&
+          typeof (args as EventArgs).user === "string" &&
+          typeof (args as EventArgs).merchant === "string"
+        ) {
+          // Now that we've confirmed the structure, cast to EventArgs
+          const eventArgs = args as EventArgs;
+
+          // Return the event if it matches the event name and amount
+          return (
+            event.eventName === "CryptoSoldForFiat" &&
+            eventArgs.amount === BigInt(toWei(amount)) // Compare amount with frontend input
+          );
+        }
+
+        return false;
+      })
+      .map((event) => event.args); // Extract the args for the matching event
+  const eventName = contractEvent
+    ? contractEvent[contractEvent.length - 1].eventName
+    : "";

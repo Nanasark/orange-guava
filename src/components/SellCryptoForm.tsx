@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaExchangeAlt, FaCoins } from "react-icons/fa";
-import { useActiveAccount, useSendTransaction } from "thirdweb/react";
+import {
+  useActiveAccount,
+  useSendTransaction,
+  useContractEvents,
+} from "thirdweb/react";
 import {
   prepareContractCall,
   sendTransaction,
@@ -11,9 +15,20 @@ import {
 import { approve, allowance } from "thirdweb/extensions/erc20";
 import { contract, tokenContract } from "@/app/contract";
 import { Account } from "thirdweb/wallets";
+import { baseUrl } from "@/app/strings";
+import { formatPhoneNumber } from "./phoneNumber";
 
 interface SellCryptoFormProps {
   merchantAddress: string;
+}
+
+interface EventArgs {
+  user: string;
+  merchant: string;
+  amount: bigint; // Since amount is a big integer
+  fee: bigint;
+  merchantReward: bigint;
+  ownerReward: bigint;
 }
 
 export default function SellCryptoForm({
@@ -25,13 +40,19 @@ export default function SellCryptoForm({
   if (account) {
     Account = account;
   }
-
-  const { mutateAsync: sendTx } = useSendTransaction();
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [accountName, setAccountName] = useState("");
+  const [provider, setProvider] = useState("");
   const [amount, setAmount] = useState("");
   const [allowed, setAllowed] = useState<number | null>(null); // Null to indicate loading state
   const [allowanceLoading, setAllowanceLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const {
+    mutateAsync: sendTx,
+    error: sellError,
+    status: sellStatus,
+  } = useSendTransaction();
 
   // Fetch Allowance
   useEffect(() => {
@@ -57,7 +78,7 @@ export default function SellCryptoForm({
 
     fetchAllowance();
   }, [address, tokenContract]);
-
+  const formatedNumber = formatPhoneNumber(phoneNumber);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
@@ -81,7 +102,31 @@ export default function SellCryptoForm({
         })) as PreparedTransaction;
 
         await sendTx(transaction);
+
+        if (sellStatus === "success" || sellError === null) {
+          try {
+            const response = fetch("/api/momo-transaction/send-fiat", {
+              body: JSON.stringify({
+                receiver: {
+                  phoneNumber: formatedNumber,
+                  accountName,
+                  network: {
+                    provider,
+                  },
+                },
+                amount: amount,
+                currency: "GHS",
+                callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
+                walletId: "60f4f0e0d6c8f0001f000001",
+                payerAddress: address,
+                merchantAddress,
+              }),
+            });
+          } catch (error) {}
+        }
       }
+
+      // console.log(allEventArgs);
     } catch (error) {
       setError("Transaction failed. Please try again.");
       console.error(error);
@@ -119,6 +164,61 @@ export default function SellCryptoForm({
               <FaCoins className="text-gray-400" />
             </div>
           </div>
+        </div>
+        <div>
+          <label
+            htmlFor="phoneNumber"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="phoneNumber"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            placeholder="Enter phone number"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="accountName"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Account Name
+          </label>
+          <input
+            type="text"
+            id="accountName"
+            value={accountName}
+            onChange={(e) => setAccountName(e.target.value)}
+            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            placeholder="Enter account name"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="provider"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Provider
+          </label>
+          <select
+            id="provider"
+            value={provider}
+            onChange={(e) => setProvider(e.target.value)}
+            className="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            required
+          >
+            <option value="">Select Network Provider</option>
+            <option value="MTN">MTN</option>
+            <option value="AIRTEL">AIRTEL</option>
+            <option value="VODAFONE">VODAFONE</option>
+            <option value="TIGO">TIGO</option>
+          </select>
         </div>
         <div>
           <p className="text-sm text-gray-600">
