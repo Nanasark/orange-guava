@@ -24,6 +24,24 @@ import ConnectWallet from "./connectWallet";
 import generateIdempotencyKey from "../utils/generateIdempotencykey";
 import getChannel from "@/utils/getChannel";
 
+interface Status {
+  success: boolean;
+  msg: string;
+  data: {
+    txstatus: number;
+    txtype: number;
+    accountnumber: string;
+    payer: string;
+    payee: string;
+    amount: string;
+    value: string;
+    transactionid: string;
+    externalref: string;
+    thirdpartyref: string;
+    ts: string; // Timestamp in ISO 8601 format
+  };
+}
+
 interface BuyCryptoFormProps {
   merchantAddress: string;
 }
@@ -57,6 +75,47 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   });
   const channelNumber = getChannel(network);
 
+  const checkStatus = async (exrefId: string) => {
+    try {
+      const response = await fetch(
+        "https://transakt.offgridlabs.org/collections/mobile-money/status",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            refId: exrefId,
+          }),
+        }
+      );
+
+      const data: Status = await response.json();
+      console.log("status data", data);
+
+      if (response.ok && data.success) {
+        // Check txstatus to determine if the transaction was successful
+        if (data.data.txstatus === 1) {
+          setStatus("Transaction successful!"); // Update the status message
+          alert("Payment successful! Check your wallet to view funds.");
+        } else {
+          setStatus("Transaction failed.");
+          alert("Transaction failed. Please try again.");
+        }
+        setLoading(false); // Disable loading after the status check is complete
+      } else {
+        setStatus("Failed to verify status.");
+        alert("Status check failed.");
+        setLoading(false); // Disable loading on failure
+      }
+    } catch (error) {
+      console.error("Error checking status:", error);
+      setLoading(false); // Disable loading on error
+      setStatus("Error while checking status.");
+      alert("An error occurred while checking the payment status.");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -87,28 +146,6 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       }
     } catch (error) {
       console.error("Error initiating transaction:", error);
-    }
-  };
-
-  const checkStatus = async (exrefId: string) => {
-    try {
-      const response = await fetch(
-        "https://transakt.offgridlabs.org/collections/mobile-money/status",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            refId: exrefId,
-          }),
-        }
-      );
-      const data = await response.json();
-      if (data.success) {
-        setStatus(data.data.status);
-        setLoading(false);
-        alert("payment successful check your wallet to view funds");
-      }
-    } catch (error) {
-      console.error("Error checking status:", error);
     }
   };
 
