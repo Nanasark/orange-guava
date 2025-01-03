@@ -9,7 +9,6 @@ interface RequestData {
   callbackUrl: string;
   address: string;
   merchantAddress: string;
-  externalref: string;
   phoneNumber: string;
   reference: string;
 }
@@ -38,10 +37,9 @@ export async function POST(request: NextRequest) {
   try {
     const data: RequestData = await request.json();
     const {
-      externalref,
       reference,
       amount,
-      callbackUrl,
+
       address,
       merchantAddress,
       channel,
@@ -69,9 +67,16 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    console.log(
+      channel,
+
+      phoneNumber,
+
+      reference
+    );
+
     const responseData = await response.json();
     console.log(responseData);
-    console.log(callbackUrl);
 
     if (response.ok) {
       const metadata = {
