@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
           externalref: externalref,
           otpcode: "",
           reference: reference,
-          merchantId: "0ac35f21-e326-4190-abeb-97abbfed2908",
+          merchantId: "e54f8f04-8ff0-4e00-814a-d3ec2a51fef8",
         }),
       }
     );
@@ -75,9 +75,8 @@ export async function POST(request: NextRequest) {
     console.log(callbackUrl);
 
     if (response.ok) {
-      const transactionId = responseData.data.transactionId;
       const metadata = {
-        transactionId: `${transactionId}`,
+        transactionId: `${responseData.data}`,
         address: `${address}`,
         amount: `GHS ${amount}.00`,
         merchantAddress: `${merchantAddress}`,

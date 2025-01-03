@@ -1,9 +1,32 @@
 import { chainId } from "@/app/chain";
-// import TransactionStorage from "@/app/transactionStorage";
 import { NextRequest, NextResponse } from "next/server";
 import { toWei } from "thirdweb";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
+
+interface Status {
+  success: boolean;
+  msg: string;
+  data: {
+    txstatus: number;
+    txtype: number;
+    accountnumber: string;
+    payer: string;
+    payee: string;
+    amount: string;
+    value: string;
+    transactionid: string;
+    externalref: string;
+    thirdpartyref: string;
+    ts: string; // Timestamp in ISO 8601 format
+  };
+}
+
+interface Payload {
+  success: boolean;
+  msg: string;
+  data: string; // The data is a string representing an ID or reference.
+}
 
 const {
   ENGINE_URL,
@@ -35,39 +58,35 @@ if (
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const payload = req.body;
-    console.log("Received callback:", payload);
+    const body: Payload = await req.json();
     console.log("Received callback payload:", body);
 
-    const { transactionId } = body;
-
-    if (!transactionId) {
+    if (!body.success) {
       return NextResponse.json(
-        { success: false, message: "Missing transactionId in payload" },
+        { success: false, message: body.msg },
         { status: 400 }
       );
     }
 
     const statusResponse = await fetch(
-      `https://sandbox.offgridlabs.org/collections/mobile-money/status/${transactionId}`,
+      `https://transakt.offgridlabs.org/collections/mobile-money/status`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-TRANSAKT-API-KEY": TRANSACT_API_KEY!,
           "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
         },
+        body: JSON.stringify({ reference: body.data }),
       }
     );
 
-    const statusData = await statusResponse.json();
-    const { status } = statusData;
+    const statusData: Status = await statusResponse.json();
 
     if (statusResponse.ok) {
       console.log("Status data retrieved successfully:", statusData);
 
-      await processTransaction(statusData, status, transactionId);
+      await processTransaction(statusData, statusData.data.txstatus, body.data);
 
       return NextResponse.json({
         success: true,
@@ -90,44 +109,35 @@ export async function POST(req: NextRequest) {
 }
 
 async function processTransaction(
-  statusData: any,
-  status: any,
-  transactionId: any
+  statusData: Status,
+  txStatus: number,
+  transactionId: string
 ) {
-  const { data, error } = await supabase
-    .from("collection")
-    .select("address, merchantAddress")
-    .eq("transactionId", transactionId)
-    .single();
-
-  console.log("supabase data", data);
-
-  const address = data?.address;
-  const merchantAddress = data?.merchantAddress;
-
-  // const address =
-  //   statusData.data?.accountName && isAddress(statusData.data.accountName)
-  //     ? statusData.data.accountName
-  //     : "0x54fef221d931500f8f1bc6c7ccfdaa566ac2dabe";
-
-  if (!isAddress(address)) {
-    throw new Error("Invalid address provided");
-  }
-  const cediAmount = statusData.data?.amount;
-
-  if (!address) {
-    throw new Error("Address not provided in transaction status");
-  }
-  console.log("status", status);
-  console.log("statusData", statusData.data?.status);
-  console.log("wallet address", address);
-
-  const pricePerToken = 20;
-  const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
-  const sendingAmount = toWei(`${amount}`);
-
   try {
-    if (statusData.data?.status === "PENDING") {
+    const { data, error } = await supabase
+      .from("collection")
+      .select("address, merchantAddress")
+      .eq("transactionId", transactionId)
+      .single();
+
+    if (error) {
+      throw new Error(`Supabase error: ${error.message}`);
+    }
+
+    const address = data?.address;
+    const merchantAddress = data?.merchantAddress;
+
+    if (!isAddress(address)) {
+      throw new Error("Invalid or missing address provided");
+    }
+
+    const cediAmount = statusData.data?.amount;
+    const pricePerToken = 20;
+    const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
+    const sendingAmount = toWei(`${amount}`);
+
+    if (txStatus === 1) {
+      // Assuming 1 indicates a PENDING transaction
       const tx = await fetch(
         `${ENGINE_URL}/contract/${chainId}/${NEXT_PUBLIC_ICO_CONTRACT}/write`,
         {
@@ -149,13 +159,14 @@ async function processTransaction(
       );
 
       if (!tx.ok) {
-        console.error("Error processing transaction:", await tx.json());
+        const errorResponse = await tx.json();
+        console.error("Error processing transaction:", errorResponse);
         throw new Error("Failed to send transaction tokens");
       }
 
       console.log("Transaction sent successfully");
     } else {
-      console.log("Transaction not successful:", status);
+      console.log("Transaction not in a processable state:", txStatus);
     }
   } catch (error) {
     console.error("Error processing transaction:", error);

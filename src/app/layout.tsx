@@ -7,7 +7,7 @@ import Header from "../components/header.";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "guava-pear",
+  title: "orange-guava",
   description: "",
 };
 
@@ -19,10 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-         
         <ThirdwebProvider>
-          <Header/>
-          {children}</ThirdwebProvider>
+          <Header />
+          {children}
+        </ThirdwebProvider>
       </body>
     </html>
   );
