@@ -67,6 +67,9 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    const rawText = await response.text();
+    console.log("Raw response text:", rawText);
+
     console.log(
       channel,
 
