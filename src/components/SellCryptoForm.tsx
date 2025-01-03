@@ -16,7 +16,7 @@ import { approve, allowance } from "thirdweb/extensions/erc20";
 import { contract, tokenContract } from "@/app/contract";
 import { Account } from "thirdweb/wallets";
 import { baseUrl } from "@/app/strings";
-import { formatPhoneNumber } from "./phoneNumber";
+import { formatPhoneNumber } from "../utils/phoneNumber";
 
 interface SellCryptoFormProps {
   merchantAddress: string;

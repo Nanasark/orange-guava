@@ -3,19 +3,15 @@ import { supabase } from "@/utils/supabase-server";
 
 //This api sends crypto to user after he has paid fiat to merchant
 
-interface Customer {
-  phoneNumber: string;
-  accountName: string;
-  network: string;
-}
-
 interface RequestData {
-  customer: Customer;
+  channel: number;
   amount: number;
-  currency: string;
   callbackUrl: string;
   address: string;
   merchantAddress: string;
+  externalref: string;
+  phoneNumber: string;
+  reference: string;
 }
 
 const {
@@ -42,16 +38,18 @@ export async function POST(request: NextRequest) {
   try {
     const data: RequestData = await request.json();
     const {
-      customer,
+      externalref,
+      reference,
       amount,
-      currency,
       callbackUrl,
       address,
       merchantAddress,
+      channel,
+      phoneNumber,
     } = data;
     console.log(TRANSACT_SECRET_KEY);
     const response = await fetch(
-      "https://sandbox.offgridlabs.org/collections/mobile-money",
+      "https://transakt.offgridlabs.org/collections/mobile-money",
       {
         method: "POST",
         headers: {
@@ -60,10 +58,14 @@ export async function POST(request: NextRequest) {
           "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
         },
         body: JSON.stringify({
-          customer,
-          amount,
-          currency,
-          callbackUrl,
+          channel: channel,
+          currency: "GHS",
+          payer: phoneNumber,
+          amount: 0.4,
+          externalref: externalref,
+          otpcode: "",
+          reference: reference,
+          merchantId: "0ac35f21-e326-4190-abeb-97abbfed2908",
         }),
       }
     );
@@ -86,6 +88,8 @@ export async function POST(request: NextRequest) {
         .insert(metadata)
         .select()
         .single();
+
+      console.log(responseData);
 
       return NextResponse.json({
         success: true,

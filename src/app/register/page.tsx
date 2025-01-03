@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { FaUser, FaBuilding, FaPhone, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
-import { formatPhoneNumber } from "@/components/phoneNumber";
+import { formatPhoneNumber } from "@/utils/phoneNumber";
 import { prepareContractCall, PreparedTransaction } from "thirdweb";
 import { useSendTransaction, useActiveAccount } from "thirdweb/react";
 import { contract } from "../contract";

@@ -7,6 +7,8 @@ import {
   FaPhoneAlt,
   FaUser,
   FaNetworkWired,
+  FaWallet,
+  FaStamp,
 } from "react-icons/fa";
 import { baseUrl } from "@/app/strings";
 import {
@@ -17,8 +19,10 @@ import {
 import { client } from "@/app/client";
 import { polygonAmoy } from "thirdweb/chains";
 import { contract } from "@/app/contract";
-import { formatPhoneNumber } from "./phoneNumber";
+import { formatPhoneNumber } from "../utils/phoneNumber";
 import ConnectWallet from "./connectWallet";
+import generateIdempotencyKey from "../utils/generateIdempotencykey";
+import getChannel from "@/utils/getChannel";
 
 interface BuyCryptoFormProps {
   merchantAddress: string;
@@ -28,6 +32,8 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
   const [accountName, setAccountName] = useState("");
+  const [reference, setReference] = useState("");
+  const [walletAddress, setAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [network, setNetwork] = useState("");
   const [transactionId, setTransactionId] = useState("");
@@ -42,6 +48,14 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const formattedPhone = formatPhoneNumber(phoneNumber);
   const ghsRate = 20;
   const payingAmount = (Number(amount) * ghsRate).toString();
+  const exref = generateIdempotencyKey({
+    walletAddress: walletAddress,
+    amount,
+    network,
+    phoneNumber,
+    reference: reference,
+  });
+  const channelNumber = getChannel(network);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,15 +69,15 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_TRANSACT_KEY}`,
         },
         body: JSON.stringify({
-          customer: {
-            phoneNumber: formattedPhone,
-            accountName: address,
-            network,
-          },
+          phoneNumber: phoneNumber,
           amount: parseFloat(payingAmount),
-          currency: "GHS",
-          callbackUrl: `${baseUrl}/api/momo-status/collection-status`,
-          address: address,
+
+          channel: channelNumber,
+          externalref: exref,
+          otpcode: "",
+          reference: reference,
+
+          address: walletAddress,
           merchantAddress: merchantAddress,
         }),
       });
@@ -108,7 +122,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="Enter phone number"
+              placeholder="0241182711"
               required
             />
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -138,6 +152,51 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
             </div>
           </div>
         </div>
+        <div>
+          <label
+            htmlFor="reference"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Wallet Address
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="walletAddress"
+              value={walletAddress}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              placeholder="Enter Wallet Address"
+              required
+            />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <FaWallet className="text-gray-400" />
+            </div>
+          </div>
+        </div>
+        <div>
+          <label
+            htmlFor="reference"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
+            Reference
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id="reference"
+              value={reference}
+              onChange={(e) => setReference(e.target.value)}
+              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+              placeholder="Enter Reference"
+              required
+            />
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <FaStamp className="text-gray-400" />
+            </div>
+          </div>
+        </div>
+
         <div>
           <label
             htmlFor="amount"
@@ -175,10 +234,18 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
               className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300 appearance-none"
               required
             >
-              <option value="">Select a network</option>
-              <option value="MTN">MTN</option>
-              <option value="Vodafone">Vodafone</option>
-              <option value="AirtelTigo">AirtelTigo</option>
+              <option className="text-gray-800" value="">
+                Select a network
+              </option>
+              <option className="text-gray-800" value="MTN">
+                MTN
+              </option>
+              <option className="text-gray-800" value="Vodafone">
+                Vodafone
+              </option>
+              <option className="text-gray-800" value="AirtelTigo">
+                AirtelTigo
+              </option>
             </select>
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <FaNetworkWired className="text-gray-400" />
