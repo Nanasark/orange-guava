@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
           channel: channel,
           currency: "GHS",
           payer: phoneNumber,
-          amount: 0.4,
+          amount: 0.1,
           otpcode: "",
           reference: reference,
           merchantId: "e54f8f04-8ff0-4e00-814a-d3ec2a51fef8",

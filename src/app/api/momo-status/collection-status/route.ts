@@ -23,10 +23,26 @@ interface Status {
 }
 
 interface Payload {
-  success: boolean;
-  msg: string;
-  data: string; // The data is a string representing an ID or reference.
+  status: number;
+  code: string;
+  message: string;
+  data: {
+    txstatus: number;
+    payer: string;
+    terminalid: string;
+    accountnumber: string;
+    name: string;
+    amount: string;
+    value: string;
+    transactionid: string;
+    externalref: string;
+    thirdpartyref: string;
+    secret: string;
+    ts: string; // Timestamp in ISO 8601 format
+  };
+  go: any | null; // Adjust based on the actual structure of `go`, if applicable
 }
+
 
 const {
   ENGINE_URL,
@@ -61,9 +77,9 @@ export async function POST(req: NextRequest) {
     const body: Payload = await req.json();
     console.log("Received callback payload:", body);
 
-    if (!body.success) {
+    if (body.data.txstatus !== 1) {
       return NextResponse.json(
-        { success: false, message: body.msg },
+        { success: false, message: body.message },
         { status: 400 }
       );
     }
@@ -86,7 +102,7 @@ export async function POST(req: NextRequest) {
     if (statusResponse.ok) {
       console.log("Status data retrieved successfully:", statusData);
 
-      await processTransaction(statusData, statusData.data.txstatus, body.data);
+      await processTransaction(statusData, statusData.data.txstatus, body.data.externalref);
 
       return NextResponse.json({
         success: true,
