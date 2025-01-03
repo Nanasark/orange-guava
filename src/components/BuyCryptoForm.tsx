@@ -83,21 +83,21 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       });
       const data = await response.json();
       if (data.success) {
-        setTransactionId(data.data);
+        await checkStatus(data.data);
       }
     } catch (error) {
       console.error("Error initiating transaction:", error);
     }
   };
 
-  const checkStatus = async () => {
+  const checkStatus = async (exrefId: string) => {
     try {
       const response = await fetch(
         "https://transakt.offgridlabs.org/collections/mobile-money/status",
         {
           method: "POST",
           body: JSON.stringify({
-            refId: transactionId,
+            refId: exrefId,
           }),
         }
       );
