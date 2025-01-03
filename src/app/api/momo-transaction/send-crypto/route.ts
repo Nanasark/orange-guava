@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
     if (response.ok) {
       const metadata = {
-        transactionId: `${responseData.data}`,
+        transactionId: `${externalref}`,
         address: `${address}`,
         amount: `GHS ${amount}.00`,
         merchantAddress: `${merchantAddress}`,
