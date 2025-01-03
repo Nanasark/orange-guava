@@ -266,6 +266,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         <div>
           {address ? (
             <button
+              disabled={loading}
               type="submit"
               className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
             >
