@@ -83,7 +83,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       });
       const data = await response.json();
       if (data.success) {
-        setTransactionId(data.data.transactionId);
+        setTransactionId(data.data);
       }
     } catch (error) {
       console.error("Error initiating transaction:", error);
@@ -93,11 +93,19 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const checkStatus = async () => {
     try {
       const response = await fetch(
-        `/api/momo-status/collection-status/${transactionId}`
+        "https://transakt.offgridlabs.org/collections/mobile-money/status",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            refId: transactionId,
+          }),
+        }
       );
       const data = await response.json();
       if (data.success) {
         setStatus(data.data.status);
+        setLoading(false);
+        alert("payment successful check your wallet to view funds");
       }
     } catch (error) {
       console.error("Error checking status:", error);
