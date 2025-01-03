@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
           currency: "GHS",
           payer: phoneNumber,
           amount: 0.4,
-          externalref: externalref,
           otpcode: "",
           reference: reference,
           merchantId: "e54f8f04-8ff0-4e00-814a-d3ec2a51fef8",
@@ -76,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     if (response.ok) {
       const metadata = {
-        transactionId: `${externalref}`,
+        transactionId: `${responseData.data}`,
         address: `${address}`,
         amount: `GHS ${amount}.00`,
         merchantAddress: `${merchantAddress}`,
