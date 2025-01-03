@@ -43,7 +43,6 @@ interface Payload {
   go: any | null; // Adjust based on the actual structure of `go`, if applicable
 }
 
-
 const {
   ENGINE_URL,
   ENGINE_ACCESS_TOKEN,
@@ -99,7 +98,7 @@ export async function POST(req: NextRequest) {
 
     // const statusData: Status = await statusResponse.json();
 
-    if (body.status ==1) {
+    if (body.status == 1) {
       // console.log("Status data retrieved successfully:", statusData);
 
       await processTransaction(body, body.status, body.data.externalref);
@@ -148,7 +147,7 @@ async function processTransaction(
     }
 
     const cediAmount = statusData.data?.amount;
-    const pricePerToken = 0.000001;
+    const pricePerToken = 0.001;
     const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
     const sendingAmount = toWei(`${amount}`);
 

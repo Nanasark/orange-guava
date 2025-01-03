@@ -46,7 +46,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   // });
 
   const formattedPhone = formatPhoneNumber(phoneNumber);
-  const ghsRate = "0.000001";
+  const ghsRate = "0.001";
   const payingAmount = (Number(amount) * parseFloat(ghsRate)).toString();
   const exref = generateIdempotencyKey({
     walletAddress: walletAddress,
