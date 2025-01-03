@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
           "X-TRANSAKT-API-KEY": TRANSACT_API_KEY!,
           "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
         },
-        body: JSON.stringify({ reference: body.data }),
+        body: JSON.stringify({ refId: body.data }),
       }
     );
 
