@@ -84,35 +84,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const statusResponse = await fetch(
-      `https://transakt.offgridlabs.org/collections/mobile-money/status`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-TRANSAKT-API-KEY": TRANSACT_API_KEY!,
-          "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
-        },
-        body: JSON.stringify({ refId: body.data }),
-      }
-    );
+    // const statusResponse = await fetch(
+    //   `https://transakt.offgridlabs.org/collections/mobile-money/status`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "X-TRANSAKT-API-KEY": TRANSACT_API_KEY!,
+    //       "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
+    //     },
+    //     body: JSON.stringify({ refId: body.data }),
+    //   }
+    // );
 
-    const statusData: Status = await statusResponse.json();
+    // const statusData: Status = await statusResponse.json();
 
-    if (statusResponse.ok) {
-      console.log("Status data retrieved successfully:", statusData);
+    if (body.status ==1) {
+      // console.log("Status data retrieved successfully:", statusData);
 
-      await processTransaction(statusData, statusData.data.txstatus, body.data.externalref);
+      await processTransaction(body, body.status, body.data.externalref);
 
       return NextResponse.json({
         success: true,
         message: "Transaction processed successfully",
       });
     } else {
-      console.error("Failed to fetch transaction status:", statusData);
+      console.error("Failed to fetch transaction status:", body);
       return NextResponse.json(
         { success: false, message: "Failed to fetch transaction status" },
-        { status: statusResponse.status }
+        { status: body.status }
       );
     }
   } catch (error) {
@@ -125,7 +125,7 @@ export async function POST(req: NextRequest) {
 }
 
 async function processTransaction(
-  statusData: Status,
+  statusData: Payload,
   txStatus: number,
   transactionId: string
 ) {
@@ -148,7 +148,7 @@ async function processTransaction(
     }
 
     const cediAmount = statusData.data?.amount;
-    const pricePerToken = 20;
+    const pricePerToken = 0.000001;
     const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
     const sendingAmount = toWei(`${amount}`);
 

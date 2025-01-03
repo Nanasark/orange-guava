@@ -46,8 +46,8 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   // });
 
   const formattedPhone = formatPhoneNumber(phoneNumber);
-  const ghsRate = 20;
-  const payingAmount = (Number(amount) * ghsRate).toString();
+  const ghsRate = "0.000001";
+  const payingAmount = (Number(amount) * parseFloat(ghsRate)).toString();
   const exref = generateIdempotencyKey({
     walletAddress: walletAddress,
     amount,
@@ -278,7 +278,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         </div>
       </form>
 
-      {transactionId && (
+      {/* {transactionId && (
         <div className="mt-6 space-y-4">
           <p className="text-sm text-gray-600">
             Transaction ID: {transactionId}
@@ -291,7 +291,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           </button>
           {status && <p className="text-sm text-gray-600">Status: {status}</p>}
         </div>
-      )}
+      )} */}
     </div>
   );
 }
