@@ -7,8 +7,8 @@ import { toUSDC } from "@/utils/conversions";
 interface BuyCryptoCardProps {
   merchant: {
     isRegistered: boolean;
-    stakedBalance: bigint;
-    rewardBalance: bigint;
+    stakedBalance: string;
+    rewardBalance: string;
     merchantAddress: string;
   };
 }

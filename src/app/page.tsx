@@ -12,7 +12,7 @@ import { useMerchantsData } from "@/hooks/useMerchantsData";
 export default function Dashboard() {
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
 
-   const { allMerchants, isLoading, error } = useMerchantsData();
+  const { allMerchants, isLoading, error } = useMerchantsData();
 
   // Handle loading, error, and display of merchants
   const renderMerchants = () => {
@@ -25,7 +25,7 @@ export default function Dashboard() {
     if (allMerchants.length === 0) {
       return <div>No merchants available.</div>;
     }
-  }
+  };
   console.log(allMerchants[0]);
   console.log(allMerchants.length);
   return (

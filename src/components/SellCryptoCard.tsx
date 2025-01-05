@@ -6,8 +6,8 @@ import { supabase } from "@/utils/supabase-server";
 interface SellCryptoCardProps {
   merchant: {
     isRegistered: boolean;
-    stakedBalance: bigint;
-    rewardBalance: bigint;
+    stakedBalance: string;
+    rewardBalance: string;
     merchantAddress: string;
   };
 }
