@@ -30,11 +30,11 @@ export default function Profile() {
 
   const walletAddress = address;
 
-  const {
-    mutateAsync: sendTx,
-    status: transaction,
-    error: txError,
-  } = useSendTransaction();
+  // const {
+  //   mutateAsync: sendTx,
+  //   status: transaction,
+  //   error: txError,
+  // } = useSendTransaction();
   const {
     mutateAsync: sendApproval,
     status: approvalstatus,
@@ -66,10 +66,10 @@ export default function Profile() {
           method: "stakeTokens",
           params: [toWei(stakeAmount)],
         }) as PreparedTransaction;
-        await sendTx(stake);
+        await sendTransaction({ transaction: stake, account: Account });
       }
     } catch (error) {
-      console.log(txError);
+      console.log(error);
     }
 
     // // Placeholder for staking logic
