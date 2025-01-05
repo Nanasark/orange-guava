@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaWallet, FaMoneyBillWave } from "react-icons/fa";
 import {
   useActiveAccount,
@@ -11,11 +11,13 @@ import {
   prepareContractCall,
   PreparedTransaction,
   sendTransaction,
+  toEther,
   toWei,
 } from "thirdweb";
-import { approve } from "thirdweb/extensions/erc20";
+import { allowance, approve } from "thirdweb/extensions/erc20";
 import { Strings } from "../strings";
 import { contract, tokenContract } from "../contract";
+import { toUSDC, toUwei } from "@/utils/conversions";
 
 export default function Profile() {
   const [stakeAmount, setStakeAmount] = useState("");
@@ -23,6 +25,9 @@ export default function Profile() {
   const [fiatAmount, setFiatAmount] = useState("");
   const account = useActiveAccount();
   const address = account ? account.address : "";
+  const [allowed, setAllowed] = useState<number>(0); // Null to indicate loading state
+  const [allowanceLoading, setAllowanceLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   let Account: any;
   if (account) {
     Account = account;
@@ -35,11 +40,6 @@ export default function Profile() {
   //   status: transaction,
   //   error: txError,
   // } = useSendTransaction();
-  const {
-    mutateAsync: sendApproval,
-    status: approvalstatus,
-    error: approvalError,
-  } = useSendTransaction();
 
   // Placeholder merchant data
   const merchant = {
@@ -50,30 +50,73 @@ export default function Profile() {
     availableFiat: 20000,
   };
 
+  const {
+    mutateAsync: sendApproval,
+    status: approvalstatus,
+    error: approvalError,
+  } = useSendTransaction();
+
+  const fetchAllowance = async () => {
+    if (!address) return;
+
+    setAllowanceLoading(true); // Start loading
+    try {
+      const result = await allowance({
+        contract: tokenContract,
+        owner: address,
+        spender: contract.address,
+      });
+      const allowedValue =
+        result && result !== null ? Number(toUSDC(result)) : 0;
+
+      setAllowed(allowedValue);
+    } catch (error) {
+      console.error("Failed to fetch allowance:", error);
+      setAllowed(0); // Handle errors by setting to 0
+    } finally {
+      setAllowanceLoading(false); // End loading
+    }
+  };
+  useEffect(() => {
+    fetchAllowance();
+  }, [address, tokenContract, stakeAmount]);
+
   const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const approval = approve({
-        contract: tokenContract,
-        spender: Strings.contractAddress,
-        amount: stakeAmount,
-      });
-      await sendApproval(approval);
 
-      if (approvalstatus === "success" || approvalError === null) {
+    try {
+      if (Number(stakeAmount) > allowed) {
+        const approval = approve({
+          contract: tokenContract,
+          spender: Strings.contractAddress,
+          amount: stakeAmount,
+        });
+
+        console.log("Sending approval transaction:", approval);
+        await sendApproval(approval);
+        console.log("Approval successful");
+
+        // Fetch updated allowance
+        await fetchAllowance();
+      }
+
+      if (Number(stakeAmount) <= allowed) {
         const stake = prepareContractCall({
           contract,
           method: "stakeTokens",
-          params: [toWei(stakeAmount)],
+          params: [toUwei(stakeAmount)],
         }) as PreparedTransaction;
+
+        console.log("Sending staking transaction:", stake);
         await sendTransaction({ transaction: stake, account: Account });
+        console.log("Staking successful");
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error in staking flow:", error);
+    } finally {
+      console.log("Allowed:", allowed);
+      console.log("ToUwei:", toUwei(stakeAmount));
     }
-
-    // // Placeholder for staking logic
-    // console.log("Staking:", stakeAmount);
   };
 
   const handleUnstake = (e: React.FormEvent) => {

@@ -1,6 +1,7 @@
 import { chainId } from "@/app/chain";
 import { NextRequest, NextResponse } from "next/server";
-import { toWei } from "thirdweb";
+// import { toWei } from "thirdweb";
+import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 
@@ -149,7 +150,7 @@ async function processTransaction(
     const cediAmount = statusData.data?.amount;
     const pricePerToken = 5;
     const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
-    const sendingAmount = toWei(`${amount}`);
+    const sendingAmount = toUwei(`${amount}`);
 
     if (txStatus === 1) {
       // Assuming 1 indicates a PENDING transaction

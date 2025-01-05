@@ -17,6 +17,7 @@ import { contract, tokenContract } from "@/app/contract";
 import { Account } from "thirdweb/wallets";
 import { baseUrl } from "@/app/strings";
 import { formatPhoneNumber } from "../utils/phoneNumber";
+import { toUSDC } from "@/utils/conversions";
 
 interface SellCryptoFormProps {
   merchantAddress: string;
@@ -66,7 +67,7 @@ export default function SellCryptoForm({
           owner: address,
           spender: contract.address,
         });
-        const allowedValue = Number(toEther(result));
+        const allowedValue = toUSDC(Number(result));
         setAllowed(allowedValue);
       } catch (error) {
         console.error("Failed to fetch allowance:", error);
