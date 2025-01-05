@@ -298,7 +298,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           </div>
         </div>
         <p className="text-sm text-blue-600">
-          You are paying {payingAmount} GHS at rate of 20GHS per token
+          You are paying {payingAmount} GHS at rate of 5GHS per token
         </p>
         <div>
           {address ? (
