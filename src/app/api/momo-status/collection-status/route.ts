@@ -147,9 +147,9 @@ async function processTransaction(
       throw new Error("Invalid or missing address provided");
     }
 
-    const cediAmount = statusData.data?.amount;
+    const cediAmount = statusData.data.amount;
     const pricePerToken = 5;
-    const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
+    const amount = parseFloat(cediAmount) / pricePerToken;
     const sendingAmount = toUwei(`${amount}`);
 
     if (txStatus === 1) {
