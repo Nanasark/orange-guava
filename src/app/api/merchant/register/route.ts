@@ -7,7 +7,7 @@ export async function POST(req:NextRequest) {
     const details = await req.json();
 
     const { data, error, status } = await supabase
-      .from("merchants")
+      .from("merchantsMainnet")
       .insert(details)
       .select()
       .single();

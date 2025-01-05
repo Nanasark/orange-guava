@@ -1,5 +1,5 @@
 import { client } from "@/app/client";
-import { polygonAmoy } from "thirdweb/chains";
+import { polygon} from "thirdweb/chains";
 import { ConnectButton } from "thirdweb/react";
 
 export default function ConnectWallet() {
@@ -9,10 +9,10 @@ export default function ConnectWallet() {
         client={client}
         chain={polygonAmoy}
         supportedTokens={{
-          80002: [
+          : [
             {
               name: "USD Coin",
-              address: "0x61db8048005919076645c82bB871ee321366Dd31",
+              address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
               symbol: "USDC",
               icon: "/usdc.png",
             },

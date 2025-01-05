@@ -45,7 +45,7 @@ export default function Register() {
       //   formattedPhoneNumber
       // );
 
-      if (status == "success") {
+      if (status === "success" || txError === null) {
         const response = await fetch("/api/merchant/register", {
           method: "POST",
           headers: {

@@ -9,7 +9,7 @@ export async function GET(
   try {
     // Fetch merchant data
     const { data: merchantData, error: merchantError } = await supabase
-      .from("merchants")
+      .from("merchantsMainnet")
       .select("*")
       .eq("address", merchantId)
       .single(); // Fetch a single merchant by ID

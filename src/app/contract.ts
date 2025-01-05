@@ -12,7 +12,8 @@ export const contract = getContract({
 });
 
 export const tokenContract = getContract({
-  address: "0x61db8048005919076645c82bB871ee321366Dd31",
+  address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+  // "0x61db8048005919076645c82bB871ee321366Dd31",
   chain: chain,
   client: client,
 });

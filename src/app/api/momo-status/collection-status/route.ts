@@ -147,7 +147,7 @@ async function processTransaction(
     }
 
     const cediAmount = statusData.data?.amount;
-    const pricePerToken = 0.001;
+    const pricePerToken = 5;
     const amount = Math.floor(parseFloat(cediAmount) / pricePerToken);
     const sendingAmount = toWei(`${amount}`);
 
