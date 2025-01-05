@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/utils/supabase-server";
 
-export async function POST(req:NextRequest) {
+export async function POST(req: NextRequest) {
   try {
     // Parse the incoming request body
     const details = await req.json();
