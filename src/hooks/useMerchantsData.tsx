@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { useReadContract } from "thirdweb/react";
 import { contract } from "@/app/contract";
 import { toEther } from "thirdweb";
+import { toUSDC } from "@/utils/conversions";
 
 interface Merchant {
   isRegistered: boolean;
-  stakedBalance: string; // Raw value from smart contract (typically in wei)
-  rewardBalance: string; // Raw value from smart contract (typically in wei)
+  stakedBalance: bigint; // Raw value from smart contract (typically in wei)
+  rewardBalance: bigint; // Raw value from smart contract (typically in wei)
   merchantAddress: string;
 }
 
@@ -25,10 +26,10 @@ export const useMerchantsData = () => {
 
   useEffect(() => {
     if (merchants && error === null) {
-      const formattedMerchants = merchants.map((merchant: any) => ({
+      const formattedMerchants = merchants.map((merchant: Merchant) => ({
         isRegistered: merchant.isRegistered,
-        stakedBalance: toEther(merchant.stakedBalance), // Assuming 18 decimals for token
-        rewardBalance: toEther(merchant.rewardBalance), // Assuming 18 decimals for token
+        stakedBalance: toUSDC(merchant.stakedBalance), 
+        rewardBalance: toUSDC(merchant.rewardBalance),
         merchantAddress: merchant.merchant,
       }));
       setAllMerchants(formattedMerchants);

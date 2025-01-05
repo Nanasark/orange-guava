@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaMoneyBillWave, FaNetworkWired } from "react-icons/fa";
 import { supabase } from "@/utils/supabase-server";
+import { toUSDC } from "@/utils/conversions";
 
 interface BuyCryptoCardProps {
   merchant: {
     isRegistered: boolean;
-    stakedBalance: string;
-    rewardBalance: string;
+    stakedBalance: bigint;
+    rewardBalance: bigint;
     merchantAddress: string;
   };
 }
@@ -66,7 +67,7 @@ export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
         <div className="flex items-center text-lg text-gray-700 mb-2">
           <FaMoneyBillWave className="mr-2 text-blue-500" />
           <span className="font-medium">Available Crypto:</span>
-          <span className="ml-2">{merchant.stakedBalance} USDT</span>
+          <span className="ml-2">{merchant.stakedBalance} USDC</span>
         </div>
 
         {/* Enabled Networks */}

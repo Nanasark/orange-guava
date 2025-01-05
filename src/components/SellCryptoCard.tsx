@@ -6,8 +6,8 @@ import { supabase } from "@/utils/supabase-server";
 interface SellCryptoCardProps {
   merchant: {
     isRegistered: boolean;
-    stakedBalance: string;
-    rewardBalance: string;
+    stakedBalance: bigint;
+    rewardBalance: bigint;
     merchantAddress: string;
   };
 }
@@ -22,7 +22,9 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
     async function fetchMerchantData() {
       try {
         // Fetch merchant data from the API
-        const response = await fetch(`/api/merchant/details/${merchant.merchantAddress}`);
+        const response = await fetch(
+          `/api/merchant/details/${merchant.merchantAddress}`
+        );
         const data = await response.json();
 
         if (data.error) {
@@ -48,7 +50,6 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
   if (!merchant.merchantAddress) {
     return <div>No merchant data found.</div>; // Display error if merchant data is not found
   }
-
 
   // Filter enabled networks
   const enabledNetworks = networks.filter((network) => network.enabled);
