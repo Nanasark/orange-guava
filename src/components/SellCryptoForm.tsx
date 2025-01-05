@@ -67,8 +67,8 @@ export default function SellCryptoForm({
           owner: address,
           spender: contract.address,
         });
-        const allowedValue = toUSDC(Number(result));
-        setAllowed(allowedValue);
+        const allowedValue = toUSDC(result);
+        setAllowed(Number(allowedValue));
       } catch (error) {
         console.error("Failed to fetch allowance:", error);
         setAllowed(0); // Handle errors by setting to 0
