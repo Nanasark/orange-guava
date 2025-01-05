@@ -21,16 +21,25 @@ export default function Profile() {
   const [stakeAmount, setStakeAmount] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [fiatAmount, setFiatAmount] = useState("");
-  const { mutateAsync: sendTx } = useSendTransaction();
   const account = useActiveAccount();
   const address = account ? account.address : "";
   let Account: any;
   if (account) {
     Account = account;
   }
-  const { mutate: sendBatchTransaction, error: txError } =
-    useSendBatchTransaction();
+
   const walletAddress = address;
+
+  const {
+    mutateAsync: sendTx,
+    status: transaction,
+    error: txError,
+  } = useSendTransaction();
+  const {
+    mutateAsync: sendApproval,
+    status: approvalstatus,
+    error: approvalError,
+  } = useSendTransaction();
 
   // Placeholder merchant data
   const merchant = {
@@ -49,24 +58,16 @@ export default function Profile() {
         spender: Strings.contractAddress,
         amount: stakeAmount,
       });
-      const stake = prepareContractCall({
-        contract,
-        method: "stakeTokens",
-        params: [toWei(stakeAmount)],
-      }) as PreparedTransaction;
+      await sendApproval(approval);
 
-      await sendBatchTransaction([approval, stake], Account);
-      // const approval =
-      // await sendTransaction({ transaction: approval, account: Account });
-
-      // const transaction = (await prepareContractCall({
-      //   contract,
-      //   method: "stakeTokens",
-      //   params: [toWei(stakeAmount)],
-      // })) as PreparedTransaction;
-
-      // await sendTx(transaction);
-     
+      if (approvalstatus === "success" || approvalError === null) {
+        const stake = prepareContractCall({
+          contract,
+          method: "stakeTokens",
+          params: [toWei(stakeAmount)],
+        }) as PreparedTransaction;
+        await sendTx(stake);
+      }
     } catch (error) {
       console.log(txError);
     }
