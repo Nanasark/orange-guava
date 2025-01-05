@@ -179,7 +179,7 @@ async function processTransaction(
         console.error("Error processing transaction:", errorResponse);
         throw new Error("Failed to send transaction tokens");
       }
-
+      console.log("sending amount:", toUwei(`${amount}`));
       console.log("Transaction sent successfully");
     } else {
       console.log("Transaction not in a processable state:", txStatus);
