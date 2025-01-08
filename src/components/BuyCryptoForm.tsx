@@ -21,6 +21,18 @@ interface BuyCryptoFormProps {
   merchantAddress: string;
 }
 
+interface ExternalData {
+  queueId: string;
+  walletAddress: string;
+  contractAddress: string;
+  chainId: string;
+  status: string;
+  txHash: string;
+  blockNumber: number;
+  txMinedTimestamp: string;
+  errorMessage: string;
+}
+
 export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -313,7 +325,6 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           setTransactionStatus("pending"); // Reset status
         }}
         status={transactionStatus}
-        transactionId={transactionId}
       />
     </div>
   );

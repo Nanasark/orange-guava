@@ -5,10 +5,9 @@ interface StatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   status: "pending" | "in_progress" | "success" | "error";
-  transactionId: string | null; // Transaction ID passed from parent
 }
 
-type StatusType = "pending" | "in_progress" | "success" | "error" | "mined";
+type StatusType = "pending" | "in_progress" | "success" | "error";
 
 interface ExternalData {
   queueId: string;
@@ -34,46 +33,11 @@ const StatusModal: React.FC<StatusModalProps> = ({
   isOpen,
   onClose,
   status,
-  transactionId,
 }) => {
   const [externalStatus, setExternalStatus] = useState<StatusType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [transactionResult, setTransactionResult] =
     useState<TransactionResult | null>(null);
-
-  useEffect(() => {
-    if (!transactionId) {
-      setExternalStatus(null);
-      setError("Transaction ID is not yet available. Please try again later.");
-      return;
-    }
-
-    const fetchTransactionStatus = async () => {
-      try {
-        const response = await fetch(
-          `/api/status/collection/${transactionId}`
-        );
-        const statusData = await response.json();
-
-        if (response.ok && statusData.success && statusData.data) {
-          const result = statusData.data;
-          setTransactionResult(result);
-          setExternalStatus(
-            result.externalData.status === "mined" ? "mined" : result.status
-          );
-        } else {
-          setExternalStatus("error");
-        }
-      } catch (error) {
-        console.error("Error fetching transaction status:", error);
-        setExternalStatus("error");
-      }
-    };
-
-    if (transactionId) {
-      fetchTransactionStatus();
-    }
-  }, [transactionId]);
 
   const statusConfig: Record<
     StatusType,
@@ -100,11 +64,6 @@ const StatusModal: React.FC<StatusModalProps> = ({
       icon: <AlertCircle className="h-8 w-8 text-red-500" />,
       message:
         "There was an error processing your transaction. Please try again.",
-    },
-    mined: {
-      title: "Transaction Mined",
-      icon: <CheckCircle className="h-8 w-8 text-green-500" />,
-      message: "Your transaction has been mined and completed successfully!",
     },
   };
 
