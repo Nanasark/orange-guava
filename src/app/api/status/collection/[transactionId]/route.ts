@@ -88,13 +88,16 @@ export async function GET(
     // If the transaction is in progress, fetch more data using the queueId
     let externalData: TransactionApiResponse | null = null;
     if (status === "in_progress" && data.queueId) {
-      const externalResponse = await fetch(`${ENGINE_URL}/${data.queueId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${ENGINE_ACCESS_TOKEN}`,
-        },
-      });
+      const externalResponse = await fetch(
+        `${ENGINE_URL}/transaction/status/${data.queueId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${ENGINE_ACCESS_TOKEN}`,
+          },
+        }
+      );
 
       externalData = await externalResponse.json();
     }
