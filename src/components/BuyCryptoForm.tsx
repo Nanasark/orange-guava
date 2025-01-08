@@ -51,34 +51,33 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    const fetchTransactionStatus = async () => {
-      if (!transactionId) return;
+ const fetchTransactionStatus = async () => {
+   if (!transactionId) return;
 
-      try {
-        const response = await fetch(
-          `/api/status/collection?transactionId=${transactionId}`
-        );
-        const data = await response.json();
-        console.log("API Response Status:", data.data.status); // Debugging
+   try {
+     const response = await fetch(
+       `/api/status/collection?transactionId=${transactionId}&ts=${Date.now()}`
+     );
+     const data = await response.json();
+     console.log("Polling API Response:", data); // Debugging log
 
-        if (data.success) {
-          console.log("API Response Status:", data.data.status); // Debugging
-          setTransactionStatus(data.data.status);
+     if (data.success && data.data.status) {
+       setTransactionStatus(data.data.status);
+       if (["success", "error"].includes(data.data.status)) {
+         clearInterval(intervalId); // Stop polling
+       }
+     } else {
+       console.error("API response error:", data);
+       setTransactionStatus("error");
+       clearInterval(intervalId);
+     }
+   } catch (error) {
+     console.error("Polling Error:", error);
+     setTransactionStatus("error");
+     clearInterval(intervalId);
+   }
+ };
 
-          if (data.data.status === "success" || data.data.status === "error") {
-            clearInterval(intervalId); // Stop polling on final states
-          }
-        } else {
-          setTransactionStatus("error");
-          clearInterval(intervalId);
-        }
-        console.log("API Response Status:", data.data.status); // Debugging
-      } catch (error) {
-        console.error("Polling Error:", error);
-        setTransactionStatus("error");
-        clearInterval(intervalId);
-      }
-    };
 
     if (transactionId) {
       fetchTransactionStatus(); // Initial call
