@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       const metadata = {
         transactionId: `${responseData.data}`,
         address: `${address}`,
-        amount: `GHS ${amount}.00`,
+        amount: `GHS ${amount}`,
         merchantAddress: `${merchantAddress}`,
         txstatus: 1,
       };

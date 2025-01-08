@@ -95,7 +95,7 @@ interface StatusModalProps {
           </h2>
           <div className="flex flex-col items-center justify-center space-y-4">
             {currentStatus.icon}
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-blue-500">
               {currentStatus.message}
             </p>
           </div>
