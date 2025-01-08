@@ -92,18 +92,6 @@ export async function GET(request: NextRequest) {
       });
 
       externalData = await externalResponse.json();
-
-      if (externalData?.result) {
-        status = externalData.result.status;
-
-        // Update the status if the external response is successful or has an error
-        if (["mined", "error"].includes(status)) {
-          await supabase
-            .from("collection")
-            .update({ txstatus: mapTxStatus(status) })
-            .eq("transactionId", transactionId);
-        }
-      }
     }
 
     // Return all relevant data to the frontend
@@ -129,13 +117,3 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper function to map status values to database txstatus
-function mapTxStatus(status: string): number {
-  switch (status) {
-    case "mined":
-      return 3; // success
-    case "error":
-      return 4; // error
-    default:
-      return 2; // in_progress or other statuses
-  }
-}
