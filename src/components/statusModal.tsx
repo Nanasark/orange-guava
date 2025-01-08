@@ -7,33 +7,44 @@ interface StatusModalProps {
   status: "pending" | "in_progress" | "success" | "error";
 }
 
- const StatusModal: React.FC<StatusModalProps> = ({
+const StatusModal: React.FC<StatusModalProps> = ({
   isOpen,
   onClose,
   status,
 }) => {
   const statusConfig = {
     pending: {
-      title: 'Transaction Pending',
+      title: "Transaction Pending",
       icon: <Loader2 className="h-8 w-8 animate-spin text-blue-500" />,
-      message: 'Your transaction is being processed. Please wait...',
+      message: "Your transaction is being processed. Please wait...",
     },
     in_progress: {
-      title: 'Transaction In Progress',
+      title: "Transaction In Progress",
       icon: <Loader2 className="h-8 w-8 animate-spin text-blue-500" />,
-      message: 'Your transaction is in progress. This may take a few moments...',
+      message:
+        "Your transaction is in progress. This may take a few moments...",
     },
     success: {
-      title: 'Transaction Successful',
+      title: "Transaction Successful",
       icon: <CheckCircle className="h-8 w-8 text-green-500" />,
-      message: 'Your transaction has been completed successfully!',
+      message: "Your transaction has been completed successfully!",
     },
     error: {
-      title: 'Transaction Failed',
+      title: "Transaction Failed",
       icon: <AlertCircle className="h-8 w-8 text-red-500" />,
-      message: 'There was an error processing your transaction. Please try again.',
+      message:
+        "There was an error processing your transaction. Please try again.",
     },
   };
+
+  useEffect(() => {
+    if (status === "success" || status === "error") {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 3000); // Auto-close the modal after 3 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [status, onClose]);
 
   const currentStatus = statusConfig[status];
 
@@ -43,11 +54,15 @@ interface StatusModalProps {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-800">{currentStatus.title}</h2>
+          <h2 className="text-xl font-semibold text-blue-800">
+            {currentStatus.title}
+          </h2>
         </div>
         <div className="flex flex-col items-center justify-center space-y-4 py-6">
           {currentStatus.icon}
-          <p className="text-center text-sm text-gray-500">{currentStatus.message}</p>
+          <p className="text-center text-sm text-blue-500">
+            {currentStatus.message}
+          </p>
         </div>
         <div className="mt-4 text-center">
           <button
@@ -61,6 +76,5 @@ interface StatusModalProps {
     </div>
   );
 };
-
 
 export default StatusModal;

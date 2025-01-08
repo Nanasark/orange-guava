@@ -300,13 +300,8 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         isOpen={modalOpen}
         onClose={() => {
           setModalOpen(false);
-          if (
-            transactionStatus === "success" ||
-            transactionStatus === "error"
-          ) {
-            setTransactionId(null);
-            setTransactionStatus("pending");
-          }
+          setTransactionId(null); // Reset transaction ID
+          setTransactionStatus("pending"); // Reset status
         }}
         status={transactionStatus}
       />
