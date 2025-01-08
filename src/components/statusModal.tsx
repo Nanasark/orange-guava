@@ -10,6 +10,27 @@ interface StatusModalProps {
 
 type StatusType = "pending" | "in_progress" | "success" | "error" | "mined";
 
+interface ExternalData {
+  queueId: string;
+  walletAddress: string;
+  contractAddress: string;
+  chainId: string;
+  status: string;
+  txHash: string;
+  blockNumber: number;
+  txMinedTimestamp: string;
+  errorMessage: string;
+}
+
+interface TransactionResult {
+  transactionId: string;
+  status: "pending" | "in_progress" | "success" | "error" | "mined";
+  amount: string;
+  address: string;
+  queueId: string;
+  externalData: ExternalData | null;
+}
+
 const StatusModal: React.FC<StatusModalProps> = ({
   isOpen,
   onClose,
@@ -18,19 +39,13 @@ const StatusModal: React.FC<StatusModalProps> = ({
 }) => {
   const [externalStatus, setExternalStatus] = useState<StatusType | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [polling, setPolling] = useState<boolean>(false);
+  const [transactionResult, setTransactionResult] =
+    useState<TransactionResult | null>(null);
 
-  // Add log for transactionId
-  useEffect(() => {
-    console.log("Transaction ID:", transactionId);
-  }, [transactionId]);
-
-  // This effect starts polling if the transactionId is initially null
   useEffect(() => {
     if (!transactionId) {
       setExternalStatus(null);
       setError("Transaction ID is not yet available. Please try again later.");
-      setPolling(true);
       return;
     }
 
@@ -39,14 +54,14 @@ const StatusModal: React.FC<StatusModalProps> = ({
         const response = await fetch(
           `/api/status/collection?transactionId=${transactionId}`
         );
-        const data = await response.json();
+        const statusData = await response.json();
 
-        if (response.ok && data.success && data.data) {
-          if (data.data.externalStatus === "mined") {
-            setExternalStatus("mined");
-          } else {
-            setExternalStatus(data.data.status);
-          }
+        if (response.ok && statusData.success && statusData.data) {
+          const result = statusData.data;
+          setTransactionResult(result);
+          setExternalStatus(
+            result.externalData.status === "mined" ? "mined" : result.status
+          );
         } else {
           setExternalStatus("error");
         }
@@ -57,25 +72,10 @@ const StatusModal: React.FC<StatusModalProps> = ({
     };
 
     if (transactionId) {
-      setPolling(false);
       fetchTransactionStatus();
     }
   }, [transactionId]);
 
-  // Polling the status until transactionId is available
-  useEffect(() => {
-    if (polling) {
-      const interval = setInterval(() => {
-        if (transactionId) {
-          setPolling(false); // Stop polling once we have the transactionId
-        }
-      }, 5000); // Poll every 5 seconds
-
-      return () => clearInterval(interval);
-    }
-  }, [polling, transactionId]);
-
-  // Config for modal based on status
   const statusConfig: Record<
     StatusType,
     { title: string; icon: JSX.Element; message: string }
@@ -109,10 +109,42 @@ const StatusModal: React.FC<StatusModalProps> = ({
     },
   };
 
-  // Show status message based on available transactionId or polling status
   const currentStatus = externalStatus
     ? statusConfig[externalStatus]
     : statusConfig[status];
+
+  const renderSuccessDetails = () => {
+    if (transactionResult?.externalData) {
+      return (
+        <div className="mt-4 text-left text-sm text-gray-600">
+          <p>
+            <strong>Transaction Hash:</strong>{" "}
+            {transactionResult.externalData.txHash}
+          </p>
+          <p>
+            <strong>Block Number:</strong>{" "}
+            {transactionResult.externalData.blockNumber}
+          </p>
+          <p>
+            <strong>Wallet Address:</strong>{" "}
+            {transactionResult.externalData.walletAddress}
+          </p>
+          <p>
+            <strong>Contract Address:</strong>{" "}
+            {transactionResult.externalData.contractAddress}
+          </p>
+          <p>
+            <strong>Chain ID:</strong> {transactionResult.externalData.chainId}
+          </p>
+          <p>
+            <strong>Transaction Mined At:</strong>{" "}
+            {transactionResult.externalData.txMinedTimestamp}
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   if (!isOpen) return null;
 
@@ -121,21 +153,16 @@ const StatusModal: React.FC<StatusModalProps> = ({
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-800">
-            {polling ? "Confirm on your phone" : currentStatus.title}
+            {currentStatus.title}
           </h2>
         </div>
         <div className="flex flex-col items-center justify-center space-y-4 py-6">
-          {polling ? (
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          ) : (
-            currentStatus.icon
-          )}
+          {currentStatus.icon}
           <p className="text-center text-sm text-gray-500">
-            {polling
-              ? "We are waiting for your confirmation. Please confirm the transaction on your phone."
-              : currentStatus.message}
+            {currentStatus.message}
           </p>
         </div>
+        {externalStatus === "success" && renderSuccessDetails()}
         <div className="mt-4 text-center">
           <button
             onClick={onClose}

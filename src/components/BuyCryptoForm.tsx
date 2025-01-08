@@ -98,44 +98,46 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       clearInterval(intervalId);
     };
   }, [transactionId]); //
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setModalOpen(true);
-    setTransactionStatus("pending");
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setTransactionStatus("pending"); // Start with a "pending" status
 
-    try {
-      const response = await fetch("/api/momo-transaction/send-crypto", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_TRANSACT_KEY}`,
-        },
-        body: JSON.stringify({
-          phoneNumber: phoneNumber,
-          amount: parseFloat(payingAmount),
-          channel: channelNumber,
-          externalref: exref,
-          otpcode: "",
-          reference: reference,
-          address: walletAddress,
-          merchantAddress: merchantAddress,
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setTransactionId(data.data.transactionId);
-        setTransactionStatus("in_progress");
-      } else {
-        setTransactionStatus("error");
-      }
-    } catch (error) {
-      console.error("Error initiating transaction:", error);
-      setTransactionStatus("error");
-    } finally {
-      setLoading(false);
+  try {
+    const response = await fetch("/api/momo-transaction/send-crypto", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TRANSACT_KEY}`,
+      },
+      body: JSON.stringify({
+        phoneNumber: phoneNumber,
+        amount: parseFloat(payingAmount),
+        channel: channelNumber,
+        externalref: exref,
+        otpcode: "",
+        reference: reference,
+        address: walletAddress,
+        merchantAddress: merchantAddress,
+      }),
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      setTransactionId(data.data); // Save the transaction ID
+      setTransactionStatus("in_progress"); // Update the status to "in_progress"
+      setModalOpen(true); // Open the modal only after transaction ID is set
+    } else {
+      setTransactionStatus("error"); // Handle error if transaction failed
     }
-  };
+  } catch (error) {
+    console.error("Error initiating transaction:", error);
+    setTransactionStatus("error"); // Handle error if there is a problem with the request
+  } finally {
+    setLoading(false); // End the loading state
+  }
+};
+
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 border border-blue-200">
