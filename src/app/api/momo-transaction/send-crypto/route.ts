@@ -84,6 +84,7 @@ export async function POST(request: NextRequest) {
         address: `${address}`,
         amount: `GHS ${amount}.00`,
         merchantAddress: `${merchantAddress}`,
+        txstatus: 1,
       };
 
       const { data, error } = await supabase
@@ -91,6 +92,10 @@ export async function POST(request: NextRequest) {
         .insert(metadata)
         .select()
         .single();
+        if (error) {
+          throw new Error(`Supabase error: ${error.message}`);
+        }
+
 
       console.log(responseData);
 

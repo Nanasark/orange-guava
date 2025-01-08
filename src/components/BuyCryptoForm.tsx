@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaExchangeAlt,
   FaDollarSign,
@@ -10,37 +10,12 @@ import {
   FaWallet,
   FaStamp,
 } from "react-icons/fa";
-import { baseUrl } from "@/app/strings";
-import {
-  ConnectButton,
-  useActiveAccount,
-  useReadContract,
-} from "thirdweb/react";
-import { client } from "@/app/client";
-import { polygonAmoy } from "thirdweb/chains";
-import { contract } from "@/app/contract";
+import { useActiveAccount } from "thirdweb/react";
 import { formatPhoneNumber } from "../utils/phoneNumber";
 import ConnectWallet from "./connectWallet";
 import generateIdempotencyKey from "../utils/generateIdempotencykey";
 import getChannel from "@/utils/getChannel";
-
-interface Status {
-  success: boolean;
-  msg: string;
-  data: {
-    txstatus: number;
-    txtype: number;
-    accountnumber: string;
-    payer: string;
-    payee: string;
-    amount: string;
-    value: string;
-    transactionid: string;
-    externalref: string;
-    thirdpartyref: string;
-    ts: string; // Timestamp in ISO 8601 format
-  };
-}
+import StatusModal from "./statusModal";
 
 interface BuyCryptoFormProps {
   merchantAddress: string;
@@ -54,14 +29,12 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const [walletAddress, setAddress] = useState("");
   const [amount, setAmount] = useState("");
   const [network, setNetwork] = useState("");
-  const [transactionId, setTransactionId] = useState("");
-  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // const { data: merchant } = useReadContract({
-  //   contract,
-  //   method: "getAllMerchants",
-  // });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState<
+    "pending" | "in_progress" | "success" | "error"
+  >("pending");
+  const [transactionId, setTransactionId] = useState<string | null>(null);
 
   const formattedPhone = formatPhoneNumber(phoneNumber);
   const ghsRate = "5";
@@ -75,50 +48,54 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   });
   const channelNumber = getChannel(network);
 
-  const checkStatus = async (exrefId: string) => {
-    try {
-      const response = await fetch(
-        "https://transakt.offgridlabs.org/collections/mobile-money/status",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            refId: exrefId,
-          }),
-        }
-      );
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
 
-      const data: Status = await response.json();
-      console.log("status data", data);
+    const checkTransactionStatus = async () => {
+      if (transactionId) {
+        try {
+          const response = await fetch(
+            `/api/status/collection?transactionId=${transactionId}`
+          );
+          const data = await response.json();
 
-      if (response.ok && data.success) {
-        // Check txstatus to determine if the transaction was successful
-        if (data.data.txstatus === 1) {
-          setStatus("Transaction successful!"); // Update the status message
-          alert("Payment successful! Check your wallet to view funds.");
-        } else {
-          setStatus("Transaction failed.");
-          alert("Transaction failed. Please try again.");
+          if (data.success) {
+            setTransactionStatus(data.data.status);
+            if (
+              data.data.status === "success" ||
+              data.data.status === "error"
+            ) {
+              clearInterval(intervalId);
+            }
+          } else {
+            setTransactionStatus("error");
+            clearInterval(intervalId);
+          }
+        } catch (error) {
+          console.error("Error checking transaction status:", error);
+          setTransactionStatus("error");
+          clearInterval(intervalId);
         }
-        setLoading(false); // Disable loading after the status check is complete
-      } else {
-        setStatus("Failed to verify status.");
-        alert("Status check failed.");
-        setLoading(false); // Disable loading on failure
       }
-    } catch (error) {
-      console.error("Error checking status:", error);
-      setLoading(false); // Disable loading on error
-      setStatus("Error while checking status.");
-      alert("An error occurred while checking the payment status.");
+    };
+
+    if (transactionId) {
+      checkTransactionStatus();
+      intervalId = setInterval(checkTransactionStatus, 5000); // Check every 5 seconds
     }
-  };
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [transactionId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setModalOpen(true);
+    setTransactionStatus("pending");
 
     try {
       const response = await fetch("/api/momo-transaction/send-crypto", {
@@ -130,22 +107,26 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         body: JSON.stringify({
           phoneNumber: phoneNumber,
           amount: parseFloat(payingAmount),
-
           channel: channelNumber,
           externalref: exref,
           otpcode: "",
           reference: reference,
-
           address: walletAddress,
           merchantAddress: merchantAddress,
         }),
       });
       const data = await response.json();
       if (data.success) {
-        await checkStatus(data.data);
+        setTransactionId(data.data.transactionId);
+        setTransactionStatus("in_progress");
+      } else {
+        setTransactionStatus("error");
       }
     } catch (error) {
       console.error("Error initiating transaction:", error);
+      setTransactionStatus("error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -199,7 +180,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         </div>
         <div>
           <label
-            htmlFor="reference"
+            htmlFor="walletAddress"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
             Wallet Address
@@ -241,7 +222,6 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
             </div>
           </div>
         </div>
-
         <div>
           <label
             htmlFor="amount"
@@ -316,20 +296,11 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         </div>
       </form>
 
-      {/* {transactionId && (
-        <div className="mt-6 space-y-4">
-          <p className="text-sm text-gray-600">
-            Transaction ID: {transactionId}
-          </p>
-          <button
-            onClick={checkStatus}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
-          >
-            Check Status
-          </button>
-          {status && <p className="text-sm text-gray-600">Status: {status}</p>}
-        </div>
-      )} */}
+      <StatusModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        status={transactionStatus}
+      />
     </div>
   );
 }

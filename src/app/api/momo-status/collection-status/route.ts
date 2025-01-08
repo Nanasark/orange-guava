@@ -152,6 +152,11 @@ async function processTransaction(
     const amount = parseFloat(cediAmount) / pricePerToken;
     const sendingAmount = toUwei(`${amount}`);
 
+    await supabase
+      .from("collection")
+      .update({ txstatus: 2 })
+      .eq("transactionId", transactionId);
+
     if (txStatus === 1) {
       // Assuming 1 indicates a PENDING transaction
       const tx = await fetch(
@@ -177,15 +182,34 @@ async function processTransaction(
       if (!tx.ok) {
         const errorResponse = await tx.json();
         console.error("Error processing transaction:", errorResponse);
+        await supabase
+          .from("collection")
+          .update({ txstatus: 4 })
+          .eq("transactionId", transactionId);
         throw new Error("Failed to send transaction tokens");
       }
+
+      // Update transaction status to 'success'
+      await supabase
+        .from("collection")
+        .update({ txstatus: 3 })
+        .eq("transactionId", transactionId);
+
       console.log("sending amount:", toUwei(`${amount}`));
       console.log("Transaction sent successfully");
     } else {
       console.log("Transaction not in a processable state:", txStatus);
+      await supabase
+        .from("collection")
+        .update({ txstatus: 4 })
+        .eq("transactionId", transactionId);
     }
   } catch (error) {
     console.error("Error processing transaction:", error);
+    await supabase
+      .from("collection")
+      .update({ txstatus: 4 })
+      .eq("transactionId", transactionId);
     throw error;
   }
 }
