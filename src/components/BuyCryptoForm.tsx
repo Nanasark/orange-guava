@@ -59,6 +59,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           `/api/status/collection?transactionId=${transactionId}`
         );
         const data = await response.json();
+        console.log("API Response Status:", data.data.status); // Debugging
 
         if (data.success) {
           console.log("API Response Status:", data.data.status); // Debugging
@@ -71,6 +72,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           setTransactionStatus("error");
           clearInterval(intervalId);
         }
+        console.log("API Response Status:", data.data.status); // Debugging
       } catch (error) {
         console.error("Polling Error:", error);
         setTransactionStatus("error");

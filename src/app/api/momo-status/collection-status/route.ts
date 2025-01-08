@@ -187,6 +187,11 @@ async function processTransaction(
           .update({ txstatus: 4 })
           .eq("transactionId", transactionId);
         throw new Error("Failed to send transaction tokens");
+      } else {
+        await supabase
+          .from("collection")
+          .update({ txstatus: 3 })
+          .eq("transactionId", transactionId);
       }
 
       // Update transaction status to 'success'
