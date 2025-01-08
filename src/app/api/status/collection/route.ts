@@ -45,6 +45,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  console.log(transactionId);
   try {
     // Fetch transaction details from Supabase
     const { data, error } = await supabase
@@ -115,5 +116,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-// Helper function to map status values to database txstatus
