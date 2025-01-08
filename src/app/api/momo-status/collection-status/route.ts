@@ -5,6 +5,12 @@ import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 
+interface ChainResponse {
+  result: {
+    queueId: string;
+  };
+}
+
 interface Status {
   success: boolean;
   msg: string;
@@ -192,6 +198,26 @@ async function processTransaction(
           .from("collection")
           .update({ txstatus: 3 })
           .eq("transactionId", transactionId);
+      }
+
+      const chainResponse: ChainResponse = await tx.json(); // Assuming tx.json() is how you get the chain response
+
+      const { queueId } = chainResponse.result;
+
+      // Insert the queueId into the 'collection' table for the specific transactionId
+      const { data, error } = await supabase
+        .from("collection")
+        .upsert([
+          {
+            transactionId: transactionId, // the specific transactionId
+            queueId: queueId, // the queueId from the response
+          },
+        ])
+        .select()
+        .single(); // .single() returns only one row (if you're expecting a single entry)
+
+      if (error) {
+        throw new Error(error.message);
       }
 
       // Update transaction status to 'success'

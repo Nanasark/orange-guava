@@ -1,6 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/utils/supabase-server";
 
+const { ENGINE_URL, ENGINE_ACCESS_TOKEN } = process.env;
+
+// Types for transaction status API
+interface TransactionResult {
+  queueId: string;
+  walletAddress: string;
+  contractAddress: string;
+  chainId: string;
+  extension: string;
+  status: string; // e.g., "mined", "error"
+  encodedInputData: string;
+  txType: number;
+  gasPrice: string;
+  gasLimit: string;
+  maxPriorityFeePerGas: string;
+  maxFeePerGas: string;
+  txHash: string;
+  submittedTxNonce: number;
+  createdTimestamp: string;
+  txProcessedTimestamp: string;
+  txSubmittedTimestamp: string;
+  deployedContractAddress: string;
+  contractType: string;
+  errorMessage: string;
+  txMinedTimestamp: string;
+  blockNumber: number;
+  onChainTxStatus: number; // 1: success, 2: in_progress, 3: error, etc.
+}
+
+interface TransactionApiResponse {
+  result: TransactionResult;
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const transactionId = searchParams.get("transactionId");
@@ -13,6 +46,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Fetch transaction details from Supabase
     const { data, error } = await supabase
       .from("collection")
       .select("*")
@@ -31,6 +65,7 @@ export async function GET(request: NextRequest) {
     }
 
     let status;
+    // Get the status of the transaction
     switch (data.txstatus) {
       case 1:
         status = "pending";
@@ -45,6 +80,33 @@ export async function GET(request: NextRequest) {
         status = "error";
     }
 
+    // If the transaction is in progress, fetch more data using the queueId
+    let externalData: TransactionApiResponse | null = null;
+    if (status === "in_progress" && data.queueId) {
+      const externalResponse = await fetch(`${ENGINE_URL}/${data.queueId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${ENGINE_ACCESS_TOKEN}`,
+        },
+      });
+
+      externalData = await externalResponse.json();
+
+      if (externalData?.result) {
+        status = externalData.result.status;
+
+        // Update the status if the external response is successful or has an error
+        if (["mined", "error"].includes(status)) {
+          await supabase
+            .from("collection")
+            .update({ txstatus: mapTxStatus(status) })
+            .eq("transactionId", transactionId);
+        }
+      }
+    }
+
+    // Return all relevant data to the frontend
     return NextResponse.json({
       success: true,
       data: {
@@ -52,7 +114,9 @@ export async function GET(request: NextRequest) {
         status: status,
         amount: data.amount,
         address: data.address,
-        // Add any other relevant fields you want to return
+        queueId: data.queueId,
+        externalData: externalData ? externalData.result : null,
+        // Any other relevant fields you want to return
       },
     });
   } catch (error) {
@@ -64,3 +128,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Helper function to map status values to database txstatus
+function mapTxStatus(status: string): number {
+  switch (status) {
+    case "mined":
+      return 3; // success
+    case "error":
+      return 4; // error
+    default:
+      return 2; // in_progress or other statuses
+  }
+}
