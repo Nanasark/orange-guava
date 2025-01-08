@@ -1,18 +1,15 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/utils/supabase-server";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method !== "GET") {
-    return res.status(405).json({ message: "Method not allowed" });
-  }
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const transactionId = searchParams.get("transactionId");
 
-  const { transactionId } = req.query;
-
-  if (!transactionId || typeof transactionId !== "string") {
-    return res.status(400).json({ message: "Invalid transaction ID" });
+  if (!transactionId) {
+    return NextResponse.json(
+      { message: "Invalid transaction ID" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -27,31 +24,42 @@ export default async function handler(
     }
 
     if (!data) {
-      return res.status(404).json({ message: "Transaction not found" });
+      return NextResponse.json(
+        { message: "Transaction not found" },
+        { status: 404 }
+      );
     }
 
     let status;
-    if (data.txstatus === 1) {
-      status = "pending";
-    } else if (data.txstatus === 2) {
-      status = "in_progress";
-    } else if (data.txstatus === 3) {
-      status = "success";
-    } else {
-      status = "error";
+    switch (data.txstatus) {
+      case 1:
+        status = "pending";
+        break;
+      case 2:
+        status = "in_progress";
+        break;
+      case 3:
+        status = "success";
+        break;
+      default:
+        status = "error";
     }
 
-    return res.status(200).json({
+    return NextResponse.json({
       success: true,
       data: {
         transactionId: data.transactionId,
         status: status,
         amount: data.amount,
         address: data.address,
+        // Add any other relevant fields you want to return
       },
     });
   } catch (error) {
     console.error("Error retrieving transaction status:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
