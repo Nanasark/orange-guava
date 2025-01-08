@@ -51,7 +51,7 @@ const StatusModal: React.FC<StatusModalProps> = ({
     const fetchTransactionStatus = async () => {
       try {
         const response = await fetch(
-          `/api/status/collection?transactionId=${transactionId}`
+          `/api/status/collection/${transactionId}`
         );
         const statusData = await response.json();
 
