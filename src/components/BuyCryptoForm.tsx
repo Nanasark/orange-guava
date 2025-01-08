@@ -59,12 +59,10 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       try {
         setIsPolling(true); // Start polling
 
-        const response = await fetch(
-          `/api/status/collection/${transactionId}`
-        );
+        const response = await fetch(`/api/status/collection/${transactionId}`);
         const data = await response.json();
         console.log("Polling API Response:", data); // Debugging log
-        
+
         if (data.success && data.data && data.data.status) {
           setTransactionStatus(data.data.status);
 
@@ -122,7 +120,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         }),
       });
       const data = await response.json();
-
+      console.log(data);
       if (data.success) {
         setTransactionId(data.data); // Save the transaction ID
         setTransactionStatus("in_progress"); // Update the status to "in_progress"
@@ -136,6 +134,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
       setTransactionStatus("error"); // Handle error if there is a problem with the request
     } finally {
       setLoading(false); // End the loading state
+      console.log("frontend transactinId", transactionId);
     }
   };
 
