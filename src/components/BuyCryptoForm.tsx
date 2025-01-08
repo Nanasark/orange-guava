@@ -56,7 +56,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
 
    try {
      const response = await fetch(
-       `/api/status/collection?transactionId=${transactionId}&ts=${Date.now()}`
+       `/api/status/collection?transactionId=${transactionId}`
      );
      const data = await response.json();
      console.log("Polling API Response:", data); // Debugging log
