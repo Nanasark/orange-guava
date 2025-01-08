@@ -5,15 +5,10 @@ interface StatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   status: "pending" | "in_progress" | "success" | "error";
-  transactionId: string | null;
+  transactionId: string | null; // Ensure this is either a valid string or null
 }
 
-interface ExternalTransactionData {
-  queueId: string;
-  status: string; // "mined", etc.
-  txHash: string;
-  txMinedTimestamp: string;
-}
+type StatusType = "pending" | "in_progress" | "success" | "error" | "mined";
 
 const StatusModal: React.FC<StatusModalProps> = ({
   isOpen,
@@ -21,12 +16,16 @@ const StatusModal: React.FC<StatusModalProps> = ({
   status,
   transactionId,
 }) => {
-  const [externalData, setExternalData] =
-    useState<ExternalTransactionData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [externalStatus, setExternalStatus] = useState<StatusType | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch transaction status and external data when the modal is opened
+  // Validate transactionId before making the API request
   useEffect(() => {
+    if (!transactionId) {
+      setError("Invalid Transaction ID");
+      return;
+    }
+
     const fetchTransactionStatus = async () => {
       try {
         const response = await fetch(
@@ -34,26 +33,32 @@ const StatusModal: React.FC<StatusModalProps> = ({
         );
         const data = await response.json();
 
-        if (data.success && data.data) {
-          if (data.data.externalData) {
-            setExternalData(data.data.externalData);
+        if (response.ok && data.success && data.data) {
+          // Check if external status is "mined" and update
+          if (data.data.externalStatus === "mined") {
+            setExternalStatus("mined");
+          } else {
+            setExternalStatus(data.data.status);
           }
+        } else {
+          setExternalStatus("error");
         }
       } catch (error) {
         console.error("Error fetching transaction status:", error);
-        setExternalData(null);
-      } finally {
-        setLoading(false);
+        setExternalStatus("error");
       }
     };
 
-    if (isOpen) {
+    if (transactionId) {
       fetchTransactionStatus();
     }
-  }, [isOpen, transactionId]);
+  }, [transactionId]);
 
-  // Config for different status states
-  const statusConfig = {
+  // Config for modal based on status
+  const statusConfig: Record<
+    StatusType,
+    { title: string; icon: JSX.Element; message: string }
+  > = {
     pending: {
       title: "Transaction Pending",
       icon: <Loader2 className="h-8 w-8 animate-spin text-blue-500" />,
@@ -76,17 +81,17 @@ const StatusModal: React.FC<StatusModalProps> = ({
       message:
         "There was an error processing your transaction. Please try again.",
     },
+    mined: {
+      title: "Transaction Mined",
+      icon: <CheckCircle className="h-8 w-8 text-green-500" />,
+      message: "Your transaction has been mined and completed successfully!",
+    },
   };
 
-  // Override statusConfig if external data status is "mined"
-  const currentStatus =
-    externalData && externalData.status === "mined"
-      ? {
-          title: "Transaction Mined",
-          icon: <CheckCircle className="h-8 w-8 text-green-500" />,
-          message: `Your transaction was mined successfully! Tx Hash: ${externalData.txHash}`,
-        }
-      : statusConfig[status];
+  // Set the appropriate status to display
+  const currentStatus = externalStatus
+    ? statusConfig[externalStatus]
+    : statusConfig[status];
 
   if (!isOpen) return null;
 
@@ -101,7 +106,7 @@ const StatusModal: React.FC<StatusModalProps> = ({
         <div className="flex flex-col items-center justify-center space-y-4 py-6">
           {currentStatus.icon}
           <p className="text-center text-sm text-gray-500">
-            {loading ? "Fetching transaction status..." : currentStatus.message}
+            {currentStatus.message}
           </p>
         </div>
         <div className="mt-4 text-center">
@@ -112,6 +117,11 @@ const StatusModal: React.FC<StatusModalProps> = ({
             Close
           </button>
         </div>
+        {error && (
+          <div className="mt-4 text-center text-red-500">
+            <p>{error}</p>
+          </div>
+        )}
       </div>
     </div>
   );
