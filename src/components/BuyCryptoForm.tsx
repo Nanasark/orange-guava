@@ -51,44 +51,39 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
-    const checkTransactionStatus = async () => {
-      if (transactionId) {
-        try {
-          const response = await fetch(
-            `/api/status/collection?transactionId=${transactionId}`
-          );
-          const data = await response.json();
+    const fetchTransactionStatus = async () => {
+      if (!transactionId) return;
 
-          if (data.success) {
-            setTransactionStatus(data.data.status);
-            if (
-              data.data.status === "success" ||
-              data.data.status === "error"
-            ) {
-              clearInterval(intervalId);
-            }
-          } else {
-            setTransactionStatus("error");
-            clearInterval(intervalId);
+      try {
+        const response = await fetch(
+          `/api/status/collection?transactionId=${transactionId}`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          console.log("API Response Status:", data.data.status); // Debugging
+          setTransactionStatus(data.data.status);
+
+          if (data.data.status === "success" || data.data.status === "error") {
+            clearInterval(intervalId); // Stop polling on final states
           }
-        } catch (error) {
-          console.error("Error checking transaction status:", error);
+        } else {
           setTransactionStatus("error");
           clearInterval(intervalId);
         }
+      } catch (error) {
+        console.error("Polling Error:", error);
+        setTransactionStatus("error");
+        clearInterval(intervalId);
       }
     };
 
     if (transactionId) {
-      checkTransactionStatus();
-      intervalId = setInterval(checkTransactionStatus, 5000); // Check every 5 seconds
+      fetchTransactionStatus(); // Initial call
+      intervalId = setInterval(fetchTransactionStatus, 5000); // Poll every 5 seconds
     }
 
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-    };
+    return () => clearInterval(intervalId); // Cleanup on unmount
   }, [transactionId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
