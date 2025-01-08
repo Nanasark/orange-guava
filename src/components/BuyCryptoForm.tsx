@@ -119,10 +119,10 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           merchantAddress: merchantAddress,
         }),
       });
-      const data = await response.json();
-      console.log(data);
-      if (data.success) {
-        setTransactionId(data.data); // Save the transaction ID
+      const responsData = await response.json();
+      console.log(responsData);
+      if (responsData.success) {
+        setTransactionId(responsData.data.data); // Save the transaction ID
         setTransactionStatus("in_progress"); // Update the status to "in_progress"
         setModalOpen(true); // Open the modal only after transaction ID is set
         console.log("frontend transactinId", transactionId);
