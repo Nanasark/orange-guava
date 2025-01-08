@@ -34,9 +34,11 @@ interface TransactionApiResponse {
   result: TransactionResult;
 }
 
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const transactionId = searchParams.get("transactionId");
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { transactionId: string } }
+) {
+  const { transactionId } = params;
 
   if (!transactionId) {
     return NextResponse.json(
@@ -47,8 +49,6 @@ export async function GET(request: NextRequest) {
 
   console.log("Transaction ID type:", typeof transactionId);
   console.log("Transaction ID value:", transactionId);
-  console.log("Full URL:", request.url);
-  console.log("Search Params:", searchParams);
 
   try {
     // Fetch transaction details from Supabase
