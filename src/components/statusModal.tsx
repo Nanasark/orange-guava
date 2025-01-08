@@ -5,7 +5,7 @@ interface StatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   status: "pending" | "in_progress" | "success" | "error";
-  transactionId: string | null; // Initially null, can be set later
+  transactionId: string | null; // Transaction ID passed from parent
 }
 
 type StatusType = "pending" | "in_progress" | "success" | "error" | "mined";
@@ -20,11 +20,16 @@ const StatusModal: React.FC<StatusModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [polling, setPolling] = useState<boolean>(false);
 
+  // Add log for transactionId
+  useEffect(() => {
+    console.log("Transaction ID:", transactionId);
+  }, [transactionId]);
+
   // This effect starts polling if the transactionId is initially null
   useEffect(() => {
     if (!transactionId) {
       setExternalStatus(null);
-      setError(null);
+      setError("Transaction ID is not yet available. Please try again later.");
       setPolling(true);
       return;
     }
