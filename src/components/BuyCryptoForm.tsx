@@ -312,6 +312,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           setTransactionStatus("pending"); // Reset status
         }}
         status={transactionStatus}
+        transactionId={transactionId}
       />
     </div>
   );
