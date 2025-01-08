@@ -5,7 +5,7 @@ interface StatusModalProps {
   isOpen: boolean;
   onClose: () => void;
   status: "pending" | "in_progress" | "success" | "error";
-  transactionId: string | null; // Ensure this is either a valid string or null
+  transactionId: string | null; // Initially null, can be set later
 }
 
 type StatusType = "pending" | "in_progress" | "success" | "error" | "mined";
@@ -18,11 +18,14 @@ const StatusModal: React.FC<StatusModalProps> = ({
 }) => {
   const [externalStatus, setExternalStatus] = useState<StatusType | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [polling, setPolling] = useState<boolean>(false);
 
-  // Validate transactionId before making the API request
+  // This effect starts polling if the transactionId is initially null
   useEffect(() => {
     if (!transactionId) {
-      setError("Invalid Transaction ID");
+      setExternalStatus(null);
+      setError(null);
+      setPolling(true);
       return;
     }
 
@@ -34,7 +37,6 @@ const StatusModal: React.FC<StatusModalProps> = ({
         const data = await response.json();
 
         if (response.ok && data.success && data.data) {
-          // Check if external status is "mined" and update
           if (data.data.externalStatus === "mined") {
             setExternalStatus("mined");
           } else {
@@ -50,9 +52,23 @@ const StatusModal: React.FC<StatusModalProps> = ({
     };
 
     if (transactionId) {
+      setPolling(false);
       fetchTransactionStatus();
     }
   }, [transactionId]);
+
+  // Polling the status until transactionId is available
+  useEffect(() => {
+    if (polling) {
+      const interval = setInterval(() => {
+        if (transactionId) {
+          setPolling(false); // Stop polling once we have the transactionId
+        }
+      }, 5000); // Poll every 5 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [polling, transactionId]);
 
   // Config for modal based on status
   const statusConfig: Record<
@@ -88,7 +104,7 @@ const StatusModal: React.FC<StatusModalProps> = ({
     },
   };
 
-  // Set the appropriate status to display
+  // Show status message based on available transactionId or polling status
   const currentStatus = externalStatus
     ? statusConfig[externalStatus]
     : statusConfig[status];
@@ -100,13 +116,19 @@ const StatusModal: React.FC<StatusModalProps> = ({
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-800">
-            {currentStatus.title}
+            {polling ? "Confirm on your phone" : currentStatus.title}
           </h2>
         </div>
         <div className="flex flex-col items-center justify-center space-y-4 py-6">
-          {currentStatus.icon}
+          {polling ? (
+            <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          ) : (
+            currentStatus.icon
+          )}
           <p className="text-center text-sm text-gray-500">
-            {currentStatus.message}
+            {polling
+              ? "We are waiting for your confirmation. Please confirm the transaction on your phone."
+              : currentStatus.message}
           </p>
         </div>
         <div className="mt-4 text-center">
