@@ -87,7 +87,7 @@ export async function GET(
 
     // If the transaction is in progress, fetch more data using the queueId
     let externalData: TransactionApiResponse | null = null;
-    if (status === "in_progress" && data.queueId) {
+    if (data.queueId) {
       const externalResponse = await fetch(
         `${ENGINE_URL}/transaction/status/${data.queueId}`,
         {
@@ -95,11 +95,13 @@ export async function GET(
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${ENGINE_ACCESS_TOKEN}`,
+            "ngrok-skip-browser-warning": "true",
           },
         }
       );
 
       externalData = await externalResponse.json();
+      console.log("externalData", externalData);
     }
 
     // Return all relevant data to the frontend
@@ -111,7 +113,7 @@ export async function GET(
         amount: data.amount,
         address: data.address,
         queueId: data.queueId,
-        externalData: externalData ? externalData.result : null,
+        externalData: externalData,
         // Any other relevant fields you want to return
       },
     });
