@@ -150,7 +150,7 @@ async function processTransaction(
     const merchantAddress = data?.merchantAddress;
 
     if (!isAddress(address)) {
-      throw new Error("Invalid or missing address provided");
+      throw new Error("g address provided");
     }
 
     const cediAmount = statusData.data.amount;
