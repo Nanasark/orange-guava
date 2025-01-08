@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
 
       phoneNumber,
 
-      reference
+      reference,
+      amount
     );
 
     const responseData = await response.json();
