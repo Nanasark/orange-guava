@@ -23,7 +23,6 @@ interface ExternalData {
 }
 
 interface TransactionResult {
-  transactionId: string;
   status: "pending" | "in_progress" | "success" | "error" | "mined";
   amount: string;
   address: string;

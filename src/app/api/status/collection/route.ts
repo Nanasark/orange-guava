@@ -45,7 +45,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  console.log(transactionId);
+  console.log("Transaction ID type:", typeof transactionId);
+  console.log("Transaction ID value:", transactionId);
+  console.log("Full URL:", request.url);
+  console.log("Search Params:", searchParams);
+
   try {
     // Fetch transaction details from Supabase
     const { data, error } = await supabase
