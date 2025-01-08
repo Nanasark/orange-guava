@@ -48,45 +48,56 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   });
   const channelNumber = getChannel(network);
 
+  const [isPolling, setIsPolling] = useState<boolean>(false);
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
- const fetchTransactionStatus = async () => {
-   if (!transactionId) return;
+    const fetchTransactionStatus = async () => {
+      if (!transactionId) return;
 
-   try {
-     const response = await fetch(
-       `/api/status/collection?transactionId=${transactionId}`
-     );
-     const data = await response.json();
-     console.log("Polling API Response:", data); // Debugging log
+      try {
+        setIsPolling(true); // Start polling
 
-     if (data.success && data.data.status) {
-       setTransactionStatus(data.data.status);
-       if (["success", "error"].includes(data.data.status)) {
-         clearInterval(intervalId); // Stop polling
-       }
-     } else {
-       console.error("API response error:", data);
-       setTransactionStatus("error");
-       clearInterval(intervalId);
-     }
-   } catch (error) {
-     console.error("Polling Error:", error);
-     setTransactionStatus("error");
-     clearInterval(intervalId);
-   }
- };
+        const response = await fetch(
+          `/api/status/collection?transactionId=${transactionId}`
+        );
+        const data = await response.json();
+        console.log("Polling API Response:", data); // Debugging log
 
+        if (data.success && data.data && data.data.status) {
+          setTransactionStatus(data.data.status);
 
+          // Check for status updates to stop polling once it reaches a final state
+          if (["success", "error"].includes(data.data.status)) {
+            console.log("Transaction complete, stopping polling");
+            clearInterval(intervalId); // Stop polling
+          }
+        } else {
+          console.error("API response error:", data);
+          setTransactionStatus("error");
+          clearInterval(intervalId); // Stop polling on error
+        }
+      } catch (error) {
+        console.error("Polling Error:", error);
+        setTransactionStatus("error");
+        clearInterval(intervalId); // Stop polling on error
+      } finally {
+        setIsPolling(false); // Stop polling flag
+      }
+    };
+
+    // Poll every 5 seconds if there's a transaction ID
     if (transactionId) {
       fetchTransactionStatus(); // Initial call
       intervalId = setInterval(fetchTransactionStatus, 5000); // Poll every 5 seconds
     }
 
-    return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [transactionId]);
-
+    // Cleanup interval on unmount or when transactionId changes
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [transactionId]); //
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -290,6 +301,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
             <ConnectWallet />
           )}
         </div>
+        {isPolling && <p>Polling for transaction status...</p>}
       </form>
 
       <StatusModal
