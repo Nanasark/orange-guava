@@ -119,9 +119,19 @@ export default function Profile() {
     }
   };
 
-  const handleUnstake = (e: React.FormEvent) => {
+  const { mutateAsync: unstakeTx } = useSendTransaction();
+
+  const handleUnstake = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Placeholder for unstaking logic
+    try {
+      const unstake = prepareContractCall({
+        contract,
+        method: "unstakeTokens",
+        params: [toUwei(unstakeAmount)],
+      }) as PreparedTransaction;
+
+      await unstakeTx(unstake);
+    } catch (error) {}
     console.log("Unstaking:", unstakeAmount);
   };
 
