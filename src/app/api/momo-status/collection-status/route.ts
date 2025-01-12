@@ -220,6 +220,19 @@ async function processTransaction(
         throw new Error(error.message);
       }
 
+      const { data: balance, error: balanceError } = await supabase.rpc(
+        "increment_balance",
+        {
+          merchant_id: merchantAddress, 
+          amount: cediAmount, 
+        }
+      );
+
+      if (balanceError) {
+        console.error("Error incrementing balance:", balanceError);
+      } else {
+        console.log("Balance incremented successfully:", balance);
+      }
       // Update transaction status to 'success'
       await supabase
         .from("collection")

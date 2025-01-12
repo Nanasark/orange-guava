@@ -16,10 +16,16 @@ import ConnectWallet from "./connectWallet";
 import generateIdempotencyKey from "../utils/generateIdempotencykey";
 import getChannel from "@/utils/getChannel";
 import StatusModal from "./statusModal";
+import { calculateTotalAmount } from "@/utils/calculateFee";
 
 interface BuyCryptoFormProps {
   merchantAddress: string;
 }
+
+type FeeConfig = {
+  fiatFee: number;
+  exchangeRate: number;
+};
 
 interface ExternalData {
   queueId: string;
@@ -49,8 +55,13 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   const [transactionId, setTransactionId] = useState<string | null>(null);
 
   const formattedPhone = formatPhoneNumber(phoneNumber);
-  const ghsRate = "5";
-  const payingAmount = (Number(amount) * parseFloat(ghsRate)).toString();
+  // const ghsRate = "5";
+  // const payingAmount = (Number(amount) * parseFloat(ghsRate)).toString();
+  const feeConfig: FeeConfig = {
+    fiatFee: 0.5, // Fixed fiat fee of 0.5 GHS
+    exchangeRate: 5, // 5 GHS per 1 USDC
+  };
+  const calculatedAmount = calculateTotalAmount(parseFloat(amount), feeConfig);
   const exref = generateIdempotencyKey({
     walletAddress: walletAddress,
     amount,
@@ -122,7 +133,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
         },
         body: JSON.stringify({
           phoneNumber: phoneNumber,
-          amount: parseFloat(payingAmount),
+          amount: calculatedAmount.amountToSendInGHS,
           channel: channelNumber,
           externalref: exref,
           otpcode: "",
@@ -298,7 +309,8 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           </div>
         </div>
         <p className="text-sm text-blue-600">
-          You are paying {payingAmount} GHS at rate of 5GHS per token
+          You are paying {calculatedAmount.totalAmountInGHS} GHS at rate of 5GHS
+          per token
         </p>
         <div>
           {address ? (
