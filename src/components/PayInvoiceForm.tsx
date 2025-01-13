@@ -114,7 +114,7 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
 
   return (
     <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 border border-blue-200">
-      <h2 className="text-2xl font-semibold text-blue-600 mb-6">Buy Crypto</h2>
+      <h2 className="text-2xl font-semibold text-blue-600 mb-6">Transakt Pay</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">

@@ -10,12 +10,9 @@ interface PaymentPageProps {
 
 async function getInvoiceData(id: string) {
   try {
-    const response = await fetch(
-      `${baseUrl}/api/invoice/get-invoice/${id}`,
-      {
-        next: { revalidate: 0 }, // Don't cache this request
-      }
-    );
+    const response = await fetch(`${baseUrl}/api/invoice/get-invoice/${id}`, {
+      next: { revalidate: 0 }, // Don't cache this request
+    });
 
     if (!response.ok) {
       return null;
