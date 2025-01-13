@@ -3,11 +3,10 @@ export default function getChannel(channel: string): number {
     case "MTN":
       return 13;
     case "Vodafone":
-      return 12;
+      return 6;
     case "AirtelTigo":
-      return 11;
+      return 7;
     default:
       return 0;
-    
   }
 }
