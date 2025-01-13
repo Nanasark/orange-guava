@@ -16,6 +16,7 @@ import ConnectWallet from "@/components/connectWallet";
 import getChannel from "@/utils/getChannel";
 import StatusModal from "@/components/statusModal";
 import { calculateTotalAmount } from "@/utils/calculateFee";
+import { useParams } from "next/navigation";
 
 interface BuyCryptoFormProps {
   invoiceId: string;
@@ -38,7 +39,8 @@ interface ExternalData {
   errorMessage: string;
 }
 
-export default function Paylink({ invoiceId }: BuyCryptoFormProps) {
+export default function Paylink() {
+  const { address: invoiceId } = useParams();
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
 
