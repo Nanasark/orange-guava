@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/app/client";
@@ -14,20 +13,21 @@ export default function Header() {
           <h1 className="text-xl font-bold">Crypto Exchange</h1>
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-4">
-          <Link href="/" className="text-white hover:text-blue-200 transition-colors">
+          <Link
+            href="/"
+            className="text-white hover:text-blue-200 transition-colors"
+          >
             Home
           </Link>
           <Link
-            href="/exchange"
+            href="/invoice"
             className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
           >
-            P2P Exchange
+            Generate Paylink
           </Link>
-          <ConnectWallet/>
+          <ConnectWallet />
         </nav>
       </div>
     </header>
   );
 }
-
-
