@@ -71,7 +71,7 @@ export default function CreateInvoiceForm() {
           htmlFor="receiverAddress"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Receiver&apos;s Wallets
+         Receiver&apos;s Wallets
         </label>
         <input
           id="receiverAddress"
