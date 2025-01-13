@@ -40,7 +40,7 @@ interface ExternalData {
 }
 
 export default function Paylink() {
-  const { address: invoiceId } = useParams();
+  const { invoiceId } = useParams();
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
 

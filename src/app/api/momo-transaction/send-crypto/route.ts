@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           amount: amount,
           otpcode: "",
           reference: reference,
-          merchantId: "e54f8f04-8ff0-4e00-814a-d3ec2a51fef8",
+          merchantId: "496b952f-548b-4620-b2b7-d78d72a90b5c",
         }),
       }
     );
