@@ -39,7 +39,6 @@ export async function POST(request: NextRequest) {
     const {
       reference,
       amount,
-
       address,
       merchantAddress,
       channel,
