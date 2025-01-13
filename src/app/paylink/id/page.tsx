@@ -38,7 +38,7 @@ interface ExternalData {
   errorMessage: string;
 }
 
-export default function BuyCryptoForm({ invoiceId }: BuyCryptoFormProps) {
+export default function Page({ invoiceId }: BuyCryptoFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
 
