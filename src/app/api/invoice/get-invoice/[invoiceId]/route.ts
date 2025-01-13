@@ -9,9 +9,9 @@ export async function GET(
 
   try {
     const { data, error } = await supabase
-      .from("invoices")
+      .from("paymentLink")
       .select("*")
-      .eq("uuid", invoiceId)
+      .eq("id", invoiceId)
       .single();
 
     if (error) throw error;
@@ -23,7 +23,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true,  data });
+    return NextResponse.json({ success: true, data });
   } catch (error) {
     console.error("Error fetching invoice:", error);
     return NextResponse.json(

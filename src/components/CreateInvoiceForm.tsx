@@ -15,7 +15,7 @@ export default function CreateInvoiceForm() {
     receiverAddress,
     title,
   });
-  
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,13 +49,13 @@ export default function CreateInvoiceForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white">
       <div>
         <label
           htmlFor="title"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Account Name
+          Title
         </label>
         <input
           id="title"
@@ -71,7 +71,7 @@ export default function CreateInvoiceForm() {
           htmlFor="receiverAddress"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-          Wallet Address
+          Receiver&apos;s Wallets
         </label>
         <input
           id="receiverAddress"
