@@ -14,6 +14,7 @@ export async function GET(
       .eq("id", invoiceId)
       .single();
 
+    console.log(invoiceId);
     if (error) throw error;
 
     if (!data) {
