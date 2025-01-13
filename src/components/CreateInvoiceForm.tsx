@@ -49,7 +49,7 @@ export default function CreateInvoiceForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white">
+    <form onSubmit={handleSubmit} className="space-y-4 ">
       <div>
         <label
           htmlFor="title"
