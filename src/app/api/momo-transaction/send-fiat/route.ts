@@ -16,6 +16,7 @@ interface RequestData {
   payerAddress: string;
   merchantAddress: string;
   payoutId: string;
+  cdata: any;
 }
 
 const {
@@ -47,6 +48,7 @@ export async function POST(request: NextRequest) {
       currency,
       callbackUrl,
       channel,
+      cdata,
       reference,
       sublistid,
       payoutId,
@@ -84,6 +86,7 @@ export async function POST(request: NextRequest) {
       amount,
       sublistid,
       reference,
+      cdata,
     });
 
     const responseData = await response.json();
