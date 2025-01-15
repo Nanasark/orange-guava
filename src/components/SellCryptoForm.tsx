@@ -99,7 +99,8 @@ export default function SellCryptoForm({
     params: [address, merchantAddress, toUwei(`${amount}`)],
   });
 
-  const channel = getChannel(provider, "payout");
+  const payout = "payout";
+  const channel = getChannel(provider, payout);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
