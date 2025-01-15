@@ -20,7 +20,7 @@ import { baseUrl } from "@/app/strings";
 import { formatPhoneNumber } from "../utils/phoneNumber";
 import { toUSDC, toUwei } from "@/utils/conversions";
 import getChannel from "@/utils/getChannel";
-import getPayoutId from "@/utils/getPayOutId";
+import getPayoutId from "@/utils/generatePayoutId";
 
 interface SellCryptoFormProps {
   merchantAddress: string;

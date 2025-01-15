@@ -26,12 +26,3 @@ export default function getPayoutId({
   // Return the first 6 characters of the wallet address + the hash
   return `${payerAddress.slice(0, 6)}-${hash}`;
 }
-
-// Example usage
-// const walletAddress = "0x8f8b93b04a5d3e61c7f4b6c8123da45a72a2b9f7";
-// const network = "MTN";
-// const reference = "ref123456";
-// const fullName = "John Doe Smith";
-
-// const idempotencyKey = generateIdempotencyKey(walletAddress, network, reference, fullName);
-// console.log("Generated Idempotency Key:", idempotencyKey);
