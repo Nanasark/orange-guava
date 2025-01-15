@@ -9,9 +9,7 @@ import {
 import {
   prepareContractCall,
   sendTransaction,
-  toWei,
   PreparedTransaction,
-  toEther,
 } from "thirdweb";
 import { approve, allowance } from "thirdweb/extensions/erc20";
 import { contract, tokenContract } from "@/app/contract";
@@ -112,7 +110,7 @@ export default function SellCryptoForm({
         const approval = approve({
           contract: tokenContract,
           spender: contract.address,
-          amount: amount,
+          amountWei: toUwei(amount),
         }) as PreparedTransaction;
 
         await sendTransaction({ transaction: approval, account: Account });
@@ -120,7 +118,7 @@ export default function SellCryptoForm({
         const transaction = (await prepareContractCall({
           contract,
           method: "buyFiatWithCrypto",
-          params: [Account.address, toWei(amount), merchantAddress],
+          params: [Account.address, toUwei(amount), merchantAddress],
         })) as PreparedTransaction;
 
         await sendTx(transaction);
