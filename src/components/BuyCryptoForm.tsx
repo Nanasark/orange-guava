@@ -69,7 +69,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
     phoneNumber,
     reference: reference,
   });
-  const channelNumber = getChannel(network);
+  const channelNumber = getChannel(network, collection);
 
   const [isPolling, setIsPolling] = useState<boolean>(false);
 

@@ -4,18 +4,15 @@ import { supabase } from "@/utils/supabase-server";
 interface Network {
   provider: string;
 }
-interface Receiver {
-  phoneNumber: string;
-  accountName: string;
-  network: Network;
-}
 
 interface RequestData {
-  receiver: Receiver;
+  receiver: string;
   amount: number;
+  channel: string;
   currency: string;
   callbackUrl: string;
-  walletId: string;
+  reference: string;
+  sublistid: string;
   payerAddress: string;
   merchantAddress: string;
 }
@@ -48,13 +45,15 @@ export async function POST(request: NextRequest) {
       amount,
       currency,
       callbackUrl,
-      walletId,
+      channel,
+      reference,
+      sublistid,
       payerAddress,
       merchantAddress,
     } = data;
 
     const response = await fetch(
-      "https://sandbox.offgridlabs.org/payouts/mobile-money",
+      "https://transakt.offgridlabs.org/payouts/init",
       {
         method: "POST",
         headers: {
@@ -64,11 +63,13 @@ export async function POST(request: NextRequest) {
           "X-TRANSAKT-API-SECRET": TRANSACT_SECRET_KEY!,
         },
         body: JSON.stringify({
+          channel,
+          currency,
           receiver,
           amount,
-          walletId,
-          currency,
-          callbackUrl,
+          sublistid,
+          reference,
+          merchantId: "496b952f-548b-4620-b2b7-d78d72a90b5c",
         }),
       }
     );
@@ -82,10 +83,26 @@ export async function POST(request: NextRequest) {
       const metadata = {
         receiver: JSON.stringify(receiver),
         amount: `${currency} ${amount}`,
-        walletId,
+        sublistid,
         payerAddress,
         merchantAddress,
       };
+
+      if (responseData.success) {
+        const { data: balance, error: balanceError } = await supabase.rpc(
+          "decrement_balance",
+          {
+            merchant_id: merchantAddress,
+            amount: amount,
+          }
+        );
+
+        if (balanceError) {
+          console.error("Error decrementing balance:", balanceError);
+        } else {
+          console.log("Balance decremented successfully:", balance);
+        }
+      }
 
       const { data: dbData, error } = await supabase
         .from("payouts")

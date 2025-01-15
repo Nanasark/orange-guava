@@ -4,6 +4,7 @@ import {
   useActiveAccount,
   useSendTransaction,
   useContractEvents,
+  useReadContract,
 } from "thirdweb/react";
 import {
   prepareContractCall,
@@ -17,7 +18,8 @@ import { contract, tokenContract } from "@/app/contract";
 import { Account } from "thirdweb/wallets";
 import { baseUrl } from "@/app/strings";
 import { formatPhoneNumber } from "../utils/phoneNumber";
-import { toUSDC } from "@/utils/conversions";
+import { toUSDC, toUwei } from "@/utils/conversions";
+import getChannel from "@/utils/getChannel";
 
 interface SellCryptoFormProps {
   merchantAddress: string;
@@ -42,19 +44,19 @@ export default function SellCryptoForm({
     Account = account;
   }
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [accountName, setAccountName] = useState("");
   const [provider, setProvider] = useState("");
   const [amount, setAmount] = useState("");
   const [allowed, setAllowed] = useState<number | null>(null); // Null to indicate loading state
   const [allowanceLoading, setAllowanceLoading] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reference, setReference] = useState("");
   const [error, setError] = useState<string | null>(null);
   const {
     mutateAsync: sendTx,
     error: sellError,
     status: sellStatus,
   } = useSendTransaction();
-
+  const buyingAmount = Number(amount) * 5;
   // Fetch Allowance
   useEffect(() => {
     const fetchAllowance = async () => {
@@ -79,8 +81,16 @@ export default function SellCryptoForm({
 
     fetchAllowance();
   }, [address, tokenContract]);
+
   const formatedNumber = formatPhoneNumber(phoneNumber);
-  const buyingAmount = Number(amount) * 20;
+
+  const { data } = useReadContract({
+    contract,
+    method: "getLatestCryptoToFiatTransaction",
+    params: [address, merchantAddress, toUwei(`${amount}`)],
+  });
+
+  const channel = getChannel(provider, "payout");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
@@ -107,22 +117,22 @@ export default function SellCryptoForm({
 
         if (sellStatus === "success" || sellError === null) {
           try {
+            let cediAmount;
+            if (data) {
+              cediAmount = Number(toUSDC(data.amount)) * 5;
+            }
             const response = fetch("/api/momo-transaction/send-fiat", {
               method: "POST",
               body: JSON.stringify({
-                receiver: {
-                  phoneNumber: formatedNumber,
-                  accountName,
-                  network: {
-                    provider,
-                  },
-                },
-                amount: buyingAmount,
+                channel,
+                receiver: phoneNumber,
+                amount: cediAmount,
+                reference,
+                sublistid: "",
                 currency: "GHS",
                 callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
-                walletId: "60f4f0e0d6c8f0001f000001",
-                payerAddress: address,
                 merchantAddress,
+                payerAddress: address,
               }),
             });
           } catch (error) {}
@@ -187,18 +197,18 @@ export default function SellCryptoForm({
         </div>
         <div>
           <label
-            htmlFor="accountName"
+            htmlFor="reference"
             className="block text-sm font-medium text-gray-800 mb-2"
           >
-            Account Name
+            Reference
           </label>
           <input
             type="text"
-            id="accountName"
-            value={accountName}
-            onChange={(e) => setAccountName(e.target.value)}
+            id="reference"
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
             className="w-full p-2 border text-blue-800 border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-            placeholder="Enter account name"
+            placeholder="Enter Reference"
             required
           />
         </div>
