@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
 
 interface Props {
   merchantAddress: string;
@@ -17,10 +17,13 @@ export default function getPayoutId({
   amount,
   payerAddress,
 }: Props) {
-  // Concatenate inputs into a single string
-  const data = `${merchantAddress}-${network}-${reference}-${phoneNumber}-${amount}`;
+  // Generate a random salt to ensure uniqueness
+  const randomValue = randomBytes(16).toString("hex"); // 16 bytes = 32-character hex string
 
-  // Hash the data to create a deterministic key
+  // Concatenate inputs into a single string with the random salt
+  const data = `${merchantAddress}-${network}-${reference}-${phoneNumber}-${amount}-${randomValue}`;
+
+  // Hash the data to create a unique key
   const hash = createHash("sha256").update(data).digest("hex");
 
   // Return the first 6 characters of the wallet address + the hash
