@@ -15,6 +15,7 @@ interface RequestData {
   sublistid: string;
   payerAddress: string;
   merchantAddress: string;
+  payoutId: string;
 }
 
 const {
@@ -48,6 +49,7 @@ export async function POST(request: NextRequest) {
       channel,
       reference,
       sublistid,
+      payoutId,
       payerAddress,
       merchantAddress,
     } = data;
@@ -81,9 +83,10 @@ export async function POST(request: NextRequest) {
 
     if (response.ok) {
       const metadata = {
-        receiver: JSON.stringify(receiver),
+        phoneNumber: receiver,
         amount: `${currency} ${amount}`,
         sublistid,
+        payoutId,
         payerAddress,
         merchantAddress,
       };

@@ -20,6 +20,7 @@ import { baseUrl } from "@/app/strings";
 import { formatPhoneNumber } from "../utils/phoneNumber";
 import { toUSDC, toUwei } from "@/utils/conversions";
 import getChannel from "@/utils/getChannel";
+import getPayoutId from "@/utils/getPayOutId";
 
 interface SellCryptoFormProps {
   merchantAddress: string;
@@ -82,6 +83,14 @@ export default function SellCryptoForm({
     fetchAllowance();
   }, [address, tokenContract]);
 
+  const payoutId = getPayoutId({
+    amount,
+    network: provider,
+    merchantAddress,
+    reference,
+    phoneNumber,
+    payerAddress: address,
+  });
   const formatedNumber = formatPhoneNumber(phoneNumber);
 
   const { data } = useReadContract({
@@ -127,6 +136,7 @@ export default function SellCryptoForm({
                 channel,
                 receiver: phoneNumber,
                 amount: cediAmount,
+                payoutId,
                 reference,
                 sublistid: "",
                 currency: "GHS",
