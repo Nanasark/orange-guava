@@ -1,123 +1,141 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { FaExchangeAlt, FaDollarSign, FaPhoneAlt, FaNetworkWired, FaStamp } from 'react-icons/fa'
-import { useActiveAccount } from 'thirdweb/react'
-import ConnectWallet from '@/components/connectWallet'
-import StatusModal from '@/components/statusModal'
-import { calculateTotalAmount } from '@/utils/calculateFee'
-import getChannel from '@/utils/getChannel'
+import { useState, useEffect } from "react";
+import {
+  FaExchangeAlt,
+  FaDollarSign,
+  FaPhoneAlt,
+  FaNetworkWired,
+  FaStamp,
+} from "react-icons/fa";
+import { useActiveAccount } from "thirdweb/react";
+import ConnectWallet from "@/components/connectWallet";
+import StatusModal from "@/components/statusModal";
+import { calculateTotalAmount } from "@/utils/calculateFee";
+import getChannel from "@/utils/getChannel";
 
 interface PaymentFormProps {
-  invoiceId: string
-  receiverAddress: string
-  merchantAddress: string
+  invoiceId: string;
+  receiverAddress: string;
+  merchantAddress: string;
 }
 
-export default function PaymentForm({ invoiceId, receiverAddress, merchantAddress }: PaymentFormProps) {
-  const address = useActiveAccount()?.address
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [reference, setReference] = useState('')
-  const [amount, setAmount] = useState('')
-  const [network, setNetwork] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [transactionStatus, setTransactionStatus] = useState<'pending' | 'in_progress' | 'success' | 'error'>('pending')
-  const [transactionId, setTransactionId] = useState<string | null>(null)
-  const [isPolling, setIsPolling] = useState(false)
+export default function PaymentForm({
+  invoiceId,
+  receiverAddress,
+  merchantAddress,
+}: PaymentFormProps) {
+  const address = useActiveAccount()?.address;
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [reference, setReference] = useState("");
+  const [amount, setAmount] = useState("");
+  const [network, setNetwork] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [transactionStatus, setTransactionStatus] = useState<
+    "pending" | "in_progress" | "success" | "error"
+  >("pending");
+  const [transactionId, setTransactionId] = useState<string | null>(null);
+  const [isPolling, setIsPolling] = useState(false);
 
   const feeConfig = {
     fiatFee: 0.5,
     exchangeRate: 5,
-  }
-  
-  const calculatedAmount = calculateTotalAmount(parseFloat(amount), feeConfig)
-  const channelNumber = getChannel(network)
+  };
+
+  const calculatedAmount = calculateTotalAmount(parseFloat(amount), feeConfig);
+  const collection = "collection";
+  const channelNumber = getChannel(network, collection);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout
+    let intervalId: NodeJS.Timeout;
 
     const fetchTransactionStatus = async () => {
-      if (!transactionId) return
+      if (!transactionId) return;
 
       try {
-        setIsPolling(true)
-        const response = await fetch(`/api/status/collection/${transactionId}`)
-        const data = await response.json()
+        setIsPolling(true);
+        const response = await fetch(`/api/status/collection/${transactionId}`);
+        const data = await response.json();
 
         if (data.success && data.data?.status) {
-          setTransactionStatus(data.data.status)
-          
-          if (['success', 'error'].includes(data.data.status)) {
-            clearInterval(intervalId)
+          setTransactionStatus(data.data.status);
+
+          if (["success", "error"].includes(data.data.status)) {
+            clearInterval(intervalId);
           }
         } else {
-          setTransactionStatus('error')
-          clearInterval(intervalId)
+          setTransactionStatus("error");
+          clearInterval(intervalId);
         }
       } catch (error) {
-        console.error('Polling Error:', error)
-        setTransactionStatus('error')
-        clearInterval(intervalId)
+        console.error("Polling Error:", error);
+        setTransactionStatus("error");
+        clearInterval(intervalId);
       } finally {
-        setIsPolling(false)
+        setIsPolling(false);
       }
-    }
+    };
 
     if (transactionId) {
-      fetchTransactionStatus()
-      intervalId = setInterval(fetchTransactionStatus, 5000)
+      fetchTransactionStatus();
+      intervalId = setInterval(fetchTransactionStatus, 5000);
     }
 
-    return () => clearInterval(intervalId)
-  }, [transactionId])
+    return () => clearInterval(intervalId);
+  }, [transactionId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setTransactionStatus('pending')
+    e.preventDefault();
+    setLoading(true);
+    setTransactionStatus("pending");
 
     try {
-      const response = await fetch('/api/momo-transaction/send-crypto', {
-        method: 'POST',
+      const response = await fetch("/api/momo-transaction/send-crypto", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.NEXT_PUBLIC_TRANSACT_KEY}`,
         },
         body: JSON.stringify({
           phoneNumber,
           amount: calculatedAmount.amountToSendInGHS,
           channel: channelNumber,
-          otpcode: '',
+          otpcode: "",
           reference,
           address: receiverAddress,
           merchantAddress,
         }),
-      })
+      });
 
-      const responseData = await response.json()
-      
+      const responseData = await response.json();
+
       if (responseData.success) {
-        setTransactionId(responseData.data.data)
-        setTransactionStatus('in_progress')
-        setModalOpen(true)
+        setTransactionId(responseData.data.data);
+        setTransactionStatus("in_progress");
+        setModalOpen(true);
       } else {
-        setTransactionStatus('error')
+        setTransactionStatus("error");
       }
     } catch (error) {
-      console.error('Error initiating transaction:', error)
-      setTransactionStatus('error')
+      console.error("Error initiating transaction:", error);
+      setTransactionStatus("error");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 border border-blue-200">
-      <h2 className="text-2xl font-semibold text-blue-600 mb-6">Transakt Pay</h2>
+      <h2 className="text-2xl font-semibold text-blue-600 mb-6">
+        Transakt Pay
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="phoneNumber"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Phone Number
           </label>
           <div className="relative">
@@ -137,7 +155,10 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
         </div>
 
         <div>
-          <label htmlFor="reference" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="reference"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Reference
           </label>
           <div className="relative">
@@ -157,7 +178,10 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
         </div>
 
         <div>
-          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="amount"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Amount of USDC you are paying
           </label>
           <div className="relative">
@@ -177,7 +201,10 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
         </div>
 
         <div>
-          <label htmlFor="network" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="network"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Network
           </label>
           <div className="relative">
@@ -188,10 +215,18 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
               className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300 appearance-none"
               required
             >
-              <option className="text-gray-800" value="">Select a network</option>
-              <option className="text-gray-800" value="MTN">MTN</option>
-              <option className="text-gray-800" value="Vodafone">Vodafone</option>
-              <option className="text-gray-800" value="AirtelTigo">AirtelTigo</option>
+              <option className="text-gray-800" value="">
+                Select a network
+              </option>
+              <option className="text-gray-800" value="MTN">
+                MTN
+              </option>
+              <option className="text-gray-800" value="Vodafone">
+                Vodafone
+              </option>
+              <option className="text-gray-800" value="AirtelTigo">
+                AirtelTigo
+              </option>
             </select>
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <FaNetworkWired className="text-gray-400" />
@@ -200,7 +235,8 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
         </div>
 
         <p className="text-sm text-blue-600">
-          You are paying {calculatedAmount.totalAmountInGHS} GHS at rate of 5GHS per token
+          You are paying {calculatedAmount.totalAmountInGHS} GHS at rate of 5GHS
+          per token
         </p>
 
         <div>
@@ -217,20 +253,23 @@ export default function PaymentForm({ invoiceId, receiverAddress, merchantAddres
             <ConnectWallet />
           )}
         </div>
-        
-        {isPolling && <p className="text-sm text-center text-gray-600">Polling for transaction status...</p>}
+
+        {isPolling && (
+          <p className="text-sm text-center text-gray-600">
+            Polling for transaction status...
+          </p>
+        )}
       </form>
 
       <StatusModal
         isOpen={modalOpen}
         onClose={() => {
-          setModalOpen(false)
-          setTransactionId(null)
-          setTransactionStatus('pending')
+          setModalOpen(false);
+          setTransactionId(null);
+          setTransactionStatus("pending");
         }}
         status={transactionStatus}
       />
     </div>
-  )
+  );
 }
-
