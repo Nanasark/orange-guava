@@ -77,6 +77,14 @@ export async function POST(request: NextRequest) {
     );
 
     console.log("receiver:", receiver);
+    console.log("responsebody", {
+      channel,
+      currency,
+      receiver,
+      amount,
+      sublistid,
+      reference,
+    });
 
     const responseData = await response.json();
     console.log(responseData);
