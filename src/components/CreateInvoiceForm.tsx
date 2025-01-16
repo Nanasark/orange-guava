@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import generateInvoiceId from "@/utils/generateInvoiceId";
+import { Copy, CheckCircle, Loader2 } from "lucide-react";
 
 export default function CreateInvoiceForm() {
   const [title, setTitle] = useState("");
@@ -9,13 +10,13 @@ export default function CreateInvoiceForm() {
   const [merchantAddress, setMerchantAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const [paymentLink, setPaymentLink] = useState("");
+  const [copied, setCopied] = useState(false);
 
   const invoiceId = generateInvoiceId({
     merchantAddress,
     receiverAddress,
     title,
   });
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,8 +49,18 @@ export default function CreateInvoiceForm() {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(paymentLink).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 ">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-white p-8 rounded-lg shadow-md"
+    >
       <div>
         <label
           htmlFor="title"
@@ -62,7 +73,7 @@ export default function CreateInvoiceForm() {
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
           required
         />
       </div>
@@ -71,14 +82,14 @@ export default function CreateInvoiceForm() {
           htmlFor="receiverAddress"
           className="block text-sm font-medium text-gray-700 mb-1"
         >
-         Receiver&apos;s Wallets
+          Receiver&apos;s Wallet
         </label>
         <input
           id="receiverAddress"
           type="text"
           value={receiverAddress}
           onChange={(e) => setReceiverAddress(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
           required
         />
       </div>
@@ -94,29 +105,49 @@ export default function CreateInvoiceForm() {
           type="text"
           value={merchantAddress}
           onChange={(e) => setMerchantAddress(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
           required
         />
       </div>
 
       <button
         type="submit"
-        className={`w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+        className={`w-full py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out ${
           loading ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={loading}
       >
-        {loading ? "Creating..." : "Create Invoice"}
+        {loading ? (
+          <>
+            <Loader2 className="animate-spin inline-block mr-2" size={16} />
+            Creating...
+          </>
+        ) : (
+          "Create Invoice"
+        )}
       </button>
       {paymentLink && (
-        <div className="mt-4">
-          <p className="font-semibold">Payment Link:</p>
-          <a
-            href={paymentLink}
-            className="text-blue-600 hover:underline break-all"
-          >
-            {paymentLink}
-          </a>
+        <div className="mt-6 p-4 bg-gray-50 rounded-md">
+          <p className="font-semibold text-gray-700 mb-2">Payment Link:</p>
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              value={paymentLink}
+              readOnly
+              className="flex-grow px-3 py-2 text-sm bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <button
+              onClick={copyToClipboard}
+              className="p-2 text-indigo-600 hover:text-indigo-800 focus:outline-none"
+              title="Copy to clipboard"
+            >
+              {copied ? (
+                <CheckCircle className="h-5 w-5" />
+              ) : (
+                <Copy className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
       )}
     </form>
