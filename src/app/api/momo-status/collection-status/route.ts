@@ -157,6 +157,10 @@ async function processTransaction(
     const pricePerToken = 5;
     const amount = parseFloat(cediAmount) / pricePerToken;
     const sendingAmount = toUwei(`${amount}`);
+    console.log("amounts inspection", {
+      amount,
+      sendingAmount,
+    });
 
     await supabase
       .from("collection")
@@ -223,8 +227,8 @@ async function processTransaction(
       const { data: balance, error: balanceError } = await supabase.rpc(
         "increment_balance",
         {
-          merchant_id: merchantAddress, 
-          amount: cediAmount, 
+          merchant_id: merchantAddress,
+          amount: cediAmount,
         }
       );
 

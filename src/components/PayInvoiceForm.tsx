@@ -13,6 +13,7 @@ import ConnectWallet from "@/components/connectWallet";
 import StatusModal from "@/components/statusModal";
 import { calculateTotalAmount } from "@/utils/calculateFee";
 import getChannel from "@/utils/getChannel";
+import { DollarSign, Phone, Stamp } from "lucide-react";
 
 interface PaymentFormProps {
   invoiceId: string;
@@ -128,142 +129,176 @@ export default function PaymentForm({
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6 border border-blue-200">
-      <h2 className="text-2xl font-semibold text-blue-600 mb-6">
-        Transakt Pay
-      </h2>
-      <h3 className="text-green-800">{title}</h3>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="phoneNumber"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Phone Number
-          </label>
-          <div className="relative">
-            <input
-              type="tel"
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="0241182711"
-              required
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaPhoneAlt className="text-gray-400" />
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-6xl w-full">
+        <div className="flex flex-col md:flex-row">
+          {/* Left column */}
+          <div className="bg-blue-600 text-white p-8 md:w-1/2">
+            <h1 className="text-4xl font-bold mb-6">Transakt Pay</h1>
+            <div className="mb-8">
+              <svg
+                className="w-full max-w-md mx-auto"
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="100" cy="100" r="80" fill="#4CAF50" />
+                <path
+                  d="M70 100 L90 120 L130 80"
+                  stroke="white"
+                  strokeWidth="10"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className="space-y-4">
+              <h2>Payment for {title}</h2>
+              <p className="text-xl">Fast and secure payments with USDC</p>
+              <p>Experience seamless transactions across multiple networks</p>
+              <p>Competitive rates: 5 GHS per USDC token</p>
             </div>
           </div>
-        </div>
 
-        <div>
-          <label
-            htmlFor="reference"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Reference
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              id="reference"
-              value={reference}
-              onChange={(e) => setReference(e.target.value)}
-              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="Enter Reference"
-              required
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaStamp className="text-gray-400" />
-            </div>
+          {/* right side */}
+          <div className="p-8 md:w-1/2">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+              Make a Payment
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label
+                  htmlFor="phoneNumber"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Phone Number
+                </label>
+                <div className="relative">
+                  <input
+                    type="tel"
+                    id="phoneNumber"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="0241182711"
+                    required
+                  />
+                  <Phone
+                    className="absolute top-3 left-3 text-gray-400"
+                    size={18}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="reference"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Reference
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="reference"
+                    value={reference}
+                    onChange={(e) => setReference(e.target.value)}
+                    className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter Reference"
+                    required
+                  />
+                  <Stamp
+                    className="absolute top-3 left-3 text-gray-400"
+                    size={18}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="amount"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Amount of USDC
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    id="amount"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="w-full p-3 pl-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter amount"
+                    required
+                  />
+                  <DollarSign
+                    className="absolute top-3 left-3 text-gray-400"
+                    size={18}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="network"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Network
+                </label>
+                <div className="relative">
+                  <select
+                    id="network"
+                    value={network}
+                    onChange={(e) => setNetwork(e.target.value)}
+                    className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300 appearance-none"
+                    required
+                  >
+                    <option className="text-gray-800" value="">
+                      Select a network
+                    </option>
+                    <option className="text-gray-800" value="MTN">
+                      MTN
+                    </option>
+                    <option className="text-gray-800" value="Vodafone">
+                      Vodafone
+                    </option>
+                    <option className="text-gray-800" value="AirtelTigo">
+                      AirtelTigo
+                    </option>
+                  </select>
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                    <FaNetworkWired className="text-gray-400" />
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-sm text-blue-600">
+                You are paying {calculatedAmount.totalAmountInGHS} GHS at rate
+                of 5GHS per token
+              </p>
+
+              <div>
+                {address ? (
+                  <button
+                    disabled={loading}
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
+                  >
+                    <FaExchangeAlt className="mr-2" />
+                    {loading ? "Processing..." : "Initiate Transaction"}
+                  </button>
+                ) : (
+                  <ConnectWallet />
+                )}
+              </div>
+
+              {isPolling && (
+                <p className="text-sm text-center text-gray-600">
+                  Polling for transaction status...
+                </p>
+              )}
+            </form>
           </div>
         </div>
-
-        <div>
-          <label
-            htmlFor="amount"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Amount of USDC you are paying
-          </label>
-          <div className="relative">
-            <input
-              type="number"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="Enter amount"
-              required
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaDollarSign className="text-gray-400" />
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="network"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Network
-          </label>
-          <div className="relative">
-            <select
-              id="network"
-              value={network}
-              onChange={(e) => setNetwork(e.target.value)}
-              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300 appearance-none"
-              required
-            >
-              <option className="text-gray-800" value="">
-                Select a network
-              </option>
-              <option className="text-gray-800" value="MTN">
-                MTN
-              </option>
-              <option className="text-gray-800" value="Vodafone">
-                Vodafone
-              </option>
-              <option className="text-gray-800" value="AirtelTigo">
-                AirtelTigo
-              </option>
-            </select>
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaNetworkWired className="text-gray-400" />
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-blue-600">
-          You are paying {calculatedAmount.totalAmountInGHS} GHS at rate of 5GHS
-          per token
-        </p>
-
-        <div>
-          {address ? (
-            <button
-              disabled={loading}
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
-            >
-              <FaExchangeAlt className="mr-2" />
-              {loading ? "Processing..." : "Initiate Transaction"}
-            </button>
-          ) : (
-            <ConnectWallet />
-          )}
-        </div>
-
-        {isPolling && (
-          <p className="text-sm text-center text-gray-600">
-            Polling for transaction status...
-          </p>
-        )}
-      </form>
-
+      </div>
       <StatusModal
         isOpen={modalOpen}
         onClose={() => {
