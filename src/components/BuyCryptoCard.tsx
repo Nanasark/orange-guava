@@ -15,13 +15,11 @@ interface BuyCryptoCardProps {
 
 export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
   const [merchantInfo, setMerchantInfo] = useState<any>(null);
-  const [networks, setNetworks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchMerchantData() {
       try {
-        // Fetch merchant data from the API
         const response = await fetch(
           `/api/merchant/details/${merchant.merchantAddress}`
         );
@@ -32,7 +30,6 @@ export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
         }
 
         setMerchantInfo(data.merchant);
-        setNetworks(data.networks);
         console.log("merchant data", data);
       } catch (error) {
         console.error("Error fetching merchant or network data:", error);
@@ -42,18 +39,15 @@ export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
     }
 
     fetchMerchantData();
-  }, [merchant]); // Run when merchantId changes
+  }, [merchant]);
 
   if (loading) {
-    return <div>Loading...</div>; // Display loading state while fetching data
+    return <div>Loading...</div>;
   }
 
   if (!merchant) {
-    return <div>No merchant data found.</div>; // Display error if merchant data is not found
+    return <div>No merchant data found.</div>;
   }
-
-  // Filter enabled networks
-  const enabledNetworks = networks.filter((network) => network.enabled);
 
   return (
     <Link href={`/merchant/${merchant.merchantAddress}`}>
@@ -71,30 +65,12 @@ export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
         </div>
 
         {/* Enabled Networks */}
-        <div className="mb-4">
-          <h3 className="text-lg font-medium text-gray-700 mb-2">Networks:</h3>
-          {enabledNetworks.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-700">
-              {enabledNetworks.map((network) => (
-                <li key={network.id} className="text-sm">
-                  <FaNetworkWired className="inline mr-2 text-blue-500" />
-                  {network.provider}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-gray-600">No enabled networks.</p>
-          )}
-        </div>
 
         {/* Merchant Details */}
         <div className="mt-4">
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Contact:</span>{" "}
             {merchantInfo.firstName} {merchantInfo.lastName}
-          </p>
-          <p className="text-sm text-gray-600 mb-2">
-            <span className="font-medium">Email:</span> {merchantInfo.email}
           </p>
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Phone:</span>{" "}

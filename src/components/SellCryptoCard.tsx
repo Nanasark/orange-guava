@@ -66,24 +66,7 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
         <div className="flex items-center text-lg text-gray-700 mb-2">
           <FaDollarSign className="mr-2 text-green-500" />
           <span className="font-medium">Available Fiat:</span>
-          <span className="ml-2">${merchantInfo.available_fiat}</span>
-        </div>
-
-        {/* Enabled Networks */}
-        <div className="mb-4">
-          <h3 className="text-lg font-medium text-gray-700 mb-2">Networks:</h3>
-          {enabledNetworks.length > 0 ? (
-            <ul className="list-disc list-inside text-gray-700">
-              {enabledNetworks.map((network) => (
-                <li key={network.id} className="text-sm">
-                  <FaNetworkWired className="inline mr-2 text-blue-500" />
-                  {network.provider}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-gray-600">No enabled networks.</p>
-          )}
+          <span className="ml-2">GHS {merchantInfo.balance}</span>
         </div>
 
         {/* Merchant Details */}
@@ -91,13 +74,6 @@ export default function SellCryptoCard({ merchant }: SellCryptoCardProps) {
           <p className="text-sm text-gray-600 mb-2">
             <span className="font-medium">Contact:</span>{" "}
             {merchantInfo.firstName} {merchantInfo.lastName}
-          </p>
-          <p className="text-sm text-gray-600 mb-2">
-            <span className="font-medium">Email:</span> {merchantInfo.email}
-          </p>
-          <p className="text-sm text-gray-600 mb-2">
-            <span className="font-medium">Phone:</span>{" "}
-            {merchantInfo.phoneNumber}
           </p>
         </div>
 
