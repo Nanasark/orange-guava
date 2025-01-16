@@ -6,12 +6,17 @@ import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import BuyCryptoForm from "../../../components/BuyCryptoForm";
 import SellCryptoForm from "../../../components/SellCryptoForm";
 import { MerchantInfo } from "@/utils/merchant.type";
+import { useMerchantsByAddress } from "@/hooks/useMerchantByAddress";
+import { contract } from "@/app/contract";
+
 export default function MerchantDetails() {
   const { address: merchantId } = useParams(); // Get merchantId from the URL params
   const [merchantInfo, setmerchantInfo] = useState<MerchantInfo>();
   const [networks, setNetworks] = useState<any[]>([]);
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
   const [loading, setLoading] = useState(true);
+
+  const { merchant } = useMerchantsByAddress(merchantId as string);
 
   // Fetch merchant data and networks from the API
   useEffect(() => {
@@ -61,16 +66,17 @@ export default function MerchantDetails() {
               <h2 className="text-xl font-semibold text-blue-600 mb-4">
                 Merchant Information
               </h2>
-              <p className="mb-2">
+              <p className="mb-2 text-gray-700">
                 <span className="font-medium">Description:</span>{" "}
                 {merchantInfo.businessDescription}
               </p>
-              <p className="mb-2">
-                <span className="font-medium">Email:</span> {merchantInfo.email}
+              <p className="mb-2 text-gray-700">
+                <span className="font-medium">Crypto:</span>{" "}
+                {merchant?.stakedBalance}
               </p>
-              <p className="mb-2">
+              <p className="mb-2 text-gray-700">
                 <span className="font-medium">Phone:</span>{" "}
-                {merchantInfo.phoneNumber}
+                {merchantInfo.balance}
               </p>
 
               {/* <p className="mb-2">
@@ -108,7 +114,7 @@ export default function MerchantDetails() {
                 <BuyCryptoForm merchantAddress={merchantInfo.address} />
               ) : (
                 <SellCryptoForm
-                 merchantAddress={merchantInfo.address}
+                  merchantAddress={merchantInfo.address}
                   // availableFiat={merchantInfo.available_fiat}
                 />
                 // <div>Sell crypto form update soon</div>

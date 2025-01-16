@@ -13,4 +13,5 @@ export interface MerchantInfo {
   email: string;
   lastName: string;
   firstName: string;
+  balance: any;
 }
