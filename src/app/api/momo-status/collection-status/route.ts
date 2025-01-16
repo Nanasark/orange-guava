@@ -191,11 +191,12 @@ async function processTransaction(
 
       if (!tx.ok) {
         const errorResponse = await tx.json();
-        console.log("amounts inspection", {
+
+        console.error("Error processing transaction:", {
           amount,
           sendingAmount,
+          errorResponse,
         });
-        console.error("Error processing transaction:", errorResponse);
         await supabase
           .from("collection")
           .update({ txstatus: 4 })
@@ -257,7 +258,7 @@ async function processTransaction(
         .eq("transactionId", transactionId);
     }
   } catch (error) {
-    console.error("Error processing transaction:", error);
+    console.error("Error processing final transaction:", error);
     await supabase
       .from("collection")
       .update({ txstatus: 4 })

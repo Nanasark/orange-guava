@@ -135,9 +135,10 @@ export default function PaymentForm({
           {/* Left column */}
           <div className="bg-blue-600 text-white p-8 md:w-1/2">
             <h1 className="text-4xl font-bold mb-6">Transakt Pay</h1>
+            <h2 className="text-3xl font-semibold">Payment for {title}</h2>
             <div className="mb-8">
               <svg
-                className="w-24 h-24 mx-auto"
+                className="w-80 h-80 mx-auto"
                 viewBox="0 0 200 200"
                 xmlns="http://www.w3.org/2000/svg"
               >
@@ -151,7 +152,6 @@ export default function PaymentForm({
               </svg>
             </div>
             <div className="space-y-4">
-              <h2>Payment for {title}</h2>
               <p className="text-xl">Fast and secure payments with USDC</p>
               <p>Experience seamless transactions across multiple networks</p>
               <p>Competitive rates: 5 GHS per USDC token</p>
