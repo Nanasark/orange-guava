@@ -135,8 +135,27 @@ export default function PaymentForm({
           {/* Left column */}
           <div className="bg-blue-600 text-white p-8 md:w-1/2">
             <h1 className="text-4xl font-bold mb-6">Transakt Pay</h1>
-            <h2 className="text-3xl font-semibold">Payment for {title}</h2>
-            <div className="mb-8">
+            <div className="text-center">
+              <h2
+                className="text-2xl font-medium text-gray-500 mb-2"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)", // Shadow for "Payment for"
+                }}
+              >
+                Payment for
+              </h2>
+              <h2
+                className="text-3xl font-bold text-white"
+                style={{
+                  textShadow: "2px 2px 6px rgba(0, 0, 0, 0.7)", // Stronger shadow for title
+                  WebkitTextStroke: "2px black", // Black outline for the title text
+                }}
+              >
+                {title}
+              </h2>
+            </div>
+
+            <div className="mb-3">
               <svg
                 className="w-80 h-80 mx-auto"
                 viewBox="0 0 200 200"
@@ -152,9 +171,37 @@ export default function PaymentForm({
               </svg>
             </div>
             <div className="space-y-4">
-              <p className="text-xl">Fast and secure payments with USDC</p>
-              <p>Experience seamless transactions across multiple networks</p>
-              <p>Competitive rates: 5 GHS per USDC token</p>
+              <p
+                className="text-xl text-blue-300 font-semibold"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.3)", // Soft shadow
+                  WebkitTextStroke: "1px #00bcd4", // Light blue stroke for outline
+                }}
+              >
+                Fast and secure payments with USDC
+              </p>
+              <hr className="border-t border-blue-300" />{" "}
+              {/* Divider with light blue color */}
+              <p
+                className="text-lg text-blue-300"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.3)", // Soft shadow
+                  WebkitTextStroke: "1px #00bcd4", // Light blue stroke for outline
+                }}
+              >
+                Experience seamless transactions across multiple networks
+              </p>
+              <hr className="border-t border-blue-300" />{" "}
+              {/* Divider with light blue color */}
+              <p
+                className="text-lg text-blue-300"
+                style={{
+                  textShadow: "1px 1px 3px rgba(0, 0, 0, 0.3)", // Soft shadow
+                  WebkitTextStroke: "1px #00bcd4", // Light blue stroke for outline
+                }}
+              >
+                Competitive rates: 5 GHS per USDC token
+              </p>
             </div>
           </div>
 

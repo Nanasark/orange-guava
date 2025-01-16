@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
+import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
 
 interface ChainResponse {
   result: {
@@ -150,17 +151,14 @@ async function processTransaction(
     const merchantAddress = data?.merchantAddress;
 
     if (!isAddress(address)) {
-      throw new Error("g address provided");
+      throw new Error("invalid address provided");
     }
 
     const cediAmount = statusData.data.amount;
     const pricePerToken = 5;
-    const amount = parseFloat(cediAmount) / pricePerToken;
-    const sendingAmount = toUwei(`${amount}`);
-    console.log("amounts inspection", {
-      amount,
-      sendingAmount,
-    });
+    // const amount = parseFloat(cediAmount) / pricePerToken;
+    // const bigintAmount = toUwei(`${amount}`);
+    const sendingAmount = calculateSendingAmount(cediAmount, pricePerToken);
 
     await supabase
       .from("collection")
@@ -168,7 +166,6 @@ async function processTransaction(
       .eq("transactionId", transactionId);
 
     if (txStatus === 1) {
-      // Assuming 1 indicates a PENDING transaction
       const tx = await fetch(
         `${ENGINE_URL}/contract/${chainId}/${NEXT_PUBLIC_ICO_CONTRACT}/write`,
         {
@@ -192,11 +189,7 @@ async function processTransaction(
       if (!tx.ok) {
         const errorResponse = await tx.json();
 
-        console.error("Error processing transaction:", {
-          amount,
-          sendingAmount,
-          errorResponse,
-        });
+        console.error("Error processing transaction:", errorResponse);
         await supabase
           .from("collection")
           .update({ txstatus: 4 })
@@ -248,7 +241,6 @@ async function processTransaction(
         .update({ txstatus: 3 })
         .eq("transactionId", transactionId);
 
-      console.log("sending amount:", toUwei(`${amount}`));
       console.log("Transaction sent successfully");
     } else {
       console.log("Transaction not in a processable state:", txStatus);
