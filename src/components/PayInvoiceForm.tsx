@@ -137,7 +137,7 @@ export default function PaymentForm({
             <h1 className="text-4xl font-bold mb-6">Transakt Pay</h1>
             <div className="mb-8">
               <svg
-                className="w-full max-w-md mx-auto"
+                className="w-24 h-24 mx-auto"
                 viewBox="0 0 200 200"
                 xmlns="http://www.w3.org/2000/svg"
               >
