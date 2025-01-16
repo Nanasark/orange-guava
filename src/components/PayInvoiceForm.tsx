@@ -18,12 +18,14 @@ interface PaymentFormProps {
   invoiceId: string;
   receiverAddress: string;
   merchantAddress: string;
+  title: string;
 }
 
 export default function PaymentForm({
   invoiceId,
   receiverAddress,
   merchantAddress,
+  title,
 }: PaymentFormProps) {
   const address = useActiveAccount()?.address;
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -130,6 +132,7 @@ export default function PaymentForm({
       <h2 className="text-2xl font-semibold text-blue-600 mb-6">
         Transakt Pay
       </h2>
+      <h3 className="text-green-800">{title}</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label

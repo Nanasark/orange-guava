@@ -38,6 +38,7 @@ export default async function PaymentPage({ params }: PaymentPageProps) {
         invoiceId={params.id}
         receiverAddress={invoiceData.data.receiverAddress}
         merchantAddress={invoiceData.data.merchantAddress}
+        title = {invoiceData.data.title}
       />
     </div>
   );
