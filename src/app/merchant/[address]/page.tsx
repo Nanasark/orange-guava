@@ -72,25 +72,12 @@ export default function MerchantDetails() {
               </p>
               <p className="mb-2 text-gray-700">
                 <span className="font-medium">Crypto:</span>{" "}
-                {merchant?.stakedBalance}
+                {merchant?.stakedBalance} USDC
               </p>
               <p className="mb-2 text-gray-700">
-                <span className="font-medium">Phone:</span>{" "}
-                {merchantInfo.balance}
+                <span className="font-medium">Fiat:</span>{" "}
+                {merchantInfo.balance} GHS
               </p>
-
-              {/* <p className="mb-2">
-                <span className="font-medium">Available Crypto:</span>{" "}
-                {merchantInfo.available_crypto} USDC
-              </p>
-              <p className="mb-2">
-                <span className="font-medium">Available Fiat:</span> $
-                {merchant.available_fiat}
-              </p>
-              <p>
-                <span className="font-medium">Total Transactions:</span>{" "}
-                {merchantInfo.total_transactions}
-              </p> */}
             </div>
 
             <div>

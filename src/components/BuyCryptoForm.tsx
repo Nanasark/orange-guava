@@ -188,28 +188,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
             </div>
           </div>
         </div>
-        <div>
-          <label
-            htmlFor="accountName"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            Account Name
-          </label>
-          <div className="relative">
-            <input
-              type="text"
-              id="accountName"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
-              className="w-full p-2 pl-10 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-              placeholder="Enter account name"
-              required
-            />
-            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <FaUser className="text-gray-400" />
-            </div>
-          </div>
-        </div>
+
         <div>
           <label
             htmlFor="walletAddress"
