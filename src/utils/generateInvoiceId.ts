@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash, randomBytes } from "crypto";
 
 interface Props {
   receiverAddress: string;
@@ -13,7 +13,7 @@ export default function generateInvoiceId({
 }: Props) {
   // Get the current timestamp
   const timestamp = Date.now();
-
+  const randomValue = randomBytes(16).toString("hex");
   // Concatenate inputs into a single string
   const data = `${receiverAddress}-${merchantAddress}-${title}-${timestamp}`;
 
@@ -21,7 +21,7 @@ export default function generateInvoiceId({
   const hash = createHash("sha256").update(data).digest("hex");
 
   // Return the first 6 characters of the wallet address + the hash
-  return `${receiverAddress.slice(0, 6)}-${hash}`;
+  return `${randomValue.slice(0, 6)}-${hash}`;
 }
 
 // Example usage
