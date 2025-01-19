@@ -56,6 +56,12 @@ export default function Profile() {
     error: approvalError,
   } = useSendTransaction();
 
+  const {
+    mutate: claimReward,
+    error: claimError,
+    status: claimStatus,
+  } = useSendTransaction();
+
   const fetchAllowance = async () => {
     if (!address) return;
 
@@ -136,8 +142,18 @@ export default function Profile() {
   };
 
   const handleClaimRewards = () => {
-    // Placeholder for claiming rewards
-    console.log("Claiming rewards");
+    const claim = prepareContractCall({
+      contract,
+      method: "claimRewards",
+      params: [],
+    }) as PreparedTransaction;
+
+    claimReward(claim);
+    if (claimStatus === "success" || claimError === null) {
+      alert("Rewards claims!");
+    } else {
+      alert(claimError.message);
+    }
   };
 
   const handleUpdateFiat = (e: React.FormEvent) => {
@@ -253,6 +269,7 @@ export default function Profile() {
                 />
               </div>
               <button
+                disabled
                 type="submit"
                 className="bg-blue-600 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
               >

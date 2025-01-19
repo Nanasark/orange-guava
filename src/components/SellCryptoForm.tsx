@@ -127,7 +127,7 @@ export default function SellCryptoForm({
           try {
             let cediAmount;
             if (data) {
-              cediAmount = Number(toUSDC(data.amount)) * 5;
+              cediAmount = Number(amount) * 5;
             }
 
             const response = fetch("/api/momo-transaction/send-fiat", {
@@ -140,7 +140,7 @@ export default function SellCryptoForm({
                 reference,
                 sublistid: "",
                 currency: "GHS",
-                cdata:data,
+                cdata: data,
                 callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
                 merchantAddress,
                 payerAddress: address,

@@ -159,6 +159,7 @@ async function processTransaction(
     // const amount = parseFloat(cediAmount) / pricePerToken;
     // const bigintAmount = toUwei(`${amount}`);
     const sendingAmount = calculateSendingAmount(cediAmount, pricePerToken);
+    
 
     await supabase
       .from("collection")
