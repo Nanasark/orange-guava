@@ -125,10 +125,10 @@ export default function SellCryptoForm({
 
         if (sellStatus === "success" || sellError === null) {
           try {
-            let cediAmount;
-            if (data) {
-              cediAmount = Number(toUSDC(data.amount)) * 5;
-            }
+            // let cediAmount;
+            // if (data) {
+            //   cediAmount = Number(toUSDC(data.amount)) * 5;
+            // }
 
             const response = await fetch("/api/momo-transaction/send-fiat", {
               method: "POST",
@@ -147,11 +147,10 @@ export default function SellCryptoForm({
               }),
             });
             const responseData = await response.json();
-            if (response.ok) {
-              if (responseData.success) {
-                alert("momo received successfully");
-              } else console.log(responseData);
-            }
+
+            if (responseData.success) {
+              alert("momo received successfully");
+            } else console.log(responseData);
           } catch (error) {}
         }
       }

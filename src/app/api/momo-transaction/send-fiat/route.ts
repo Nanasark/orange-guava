@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/utils/supabase-server";
 
-interface Network {
-  provider: string;
-}
-
 interface RequestData {
   receiver: string;
   amount: number;
