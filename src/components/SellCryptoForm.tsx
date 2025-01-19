@@ -130,7 +130,7 @@ export default function SellCryptoForm({
             //   cediAmount = Number(toUSDC(data.amount)) * 5;
             // }
 
-            const response = await fetch("/api/momo-transaction/send-fiat", {
+            const response = fetch("/api/momo-transaction/send-fiat", {
               method: "POST",
               body: JSON.stringify({
                 channel,
@@ -146,11 +146,6 @@ export default function SellCryptoForm({
                 payerAddress: address,
               }),
             });
-            const responseData = await response.json();
-
-            if (responseData.success) {
-              alert("momo received successfully");
-            } else console.log(responseData);
           } catch (error) {}
         }
       }
