@@ -11,6 +11,7 @@
   "dependencies": {
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.469.0",
     "next": "14.1.0",
     "react": "^18.3",
@@ -19,6 +20,7 @@
     "thirdweb": "^5"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

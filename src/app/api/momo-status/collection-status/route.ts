@@ -4,12 +4,14 @@ import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
-import {
-  getSelectedChainId,
-  getContractAddress,
-} from "@/components/SelectChain";
-const chainId = getSelectedChainId();
-const ContractAddress = getContractAddress();
+import Cookies from "js-cookie";
+import { chainId, ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
+const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
+
+  // Derive other chain details
+  const chainIdValue = chainId(selectedChainSymbol);
+  const contractAddress = ContractAddress(selectedChainSymbol);
+  const usdcAddress = USDCAddress(selectedChainSymbol);
 interface ChainResponse {
   result: {
     queueId: string;
@@ -171,7 +173,7 @@ async function processTransaction(
 
     if (txStatus === 1) {
       const tx = await fetch(
-        `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
+        `${ENGINE_URL}/contract/${chainIdValue}/${contractAddress}/write`,
         {
           method: "POST",
           headers: {
