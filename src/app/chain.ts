@@ -29,5 +29,3 @@ export function chainId(chainName: string): number {
   }
 }
 
-export const selectedChain = chain("POLYGON");
-export const selectedChainId = chainId("POLYGON");

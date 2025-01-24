@@ -5,8 +5,8 @@ import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
 import Cookies from "js-cookie";
+import {chain} from "@/app/chain"
 import {  ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
-import {chainId} from "../../chain"
 const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
   // Derive other chain details
   const chainIdValue = chainId(selectedChainSymbol);

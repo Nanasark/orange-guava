@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaMoneyBillWave, FaNetworkWired } from "react-icons/fa";
 import { supabase } from "@/utils/supabase-server";
 import { toUSDC } from "@/utils/conversions";
+import {useChain} from "@/context/ChainProvider"
 
 interface BuyCryptoCardProps {
   merchant: {
@@ -14,6 +15,8 @@ interface BuyCryptoCardProps {
 }
 
 export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
+    const {  selectedChainSymbol,selectedChain, selectedChainId, contractAddress, usdcAddress, updateChain } = useChain();
+
   const [merchantInfo, setMerchantInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +42,7 @@ export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
     }
 
     fetchMerchantData();
-  }, [merchant]);
+  }, [merchant,selectedChainSymbol]);
 
   if (loading) {
     return <div>Loading...</div>;
