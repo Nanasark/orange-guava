@@ -1,11 +1,12 @@
 import { getContract } from "thirdweb";
 import { client } from "./client";
 import Cookies from "js-cookie";
-import { chainId, ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
+import { ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
+import {chain, chainId} from "./chain"
 import { ICOABI } from "./abi";
  const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
-const selectedChain = getSelectedChain();
-const selectedContractAddress = ContractAddress();
+const selectedChain = chain(selectedChainSymbol)
+const selectedContractAddress = ContractAddress(selectedChainSymbol);
 const selectedTokenAddress = USDCAddress(selectedChainSymbol)
 
 export const contract = getContract({

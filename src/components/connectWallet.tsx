@@ -21,7 +21,7 @@ export default function ConnectWallet() {
           [selectedChainId]: [
             {
               name: "USD Coin",
-              address: selectedUsdc,
+              address: usdcAddress,
               symbol: "USDC",
               icon: "/usdc.png",
             },

@@ -29,6 +29,8 @@ export default function SelectChain() {
         </select>
       </div>
       <div className="mt-4">
+
+        
         <p>Selected Chain: {selectedChain}</p>
         <p>Chain ID: {selectedChainId}</p>
         <p>Contract Address: {contractAddress}</p>
