@@ -22,6 +22,8 @@ export function getContractAddress() {
 export function getUSDCAddress() {
   return currentUSDCAddress;
 }
+
+("use client");
 export default function SelectChain() {
   const [activeChain, setActiveChain] = useState("CELO");
 
