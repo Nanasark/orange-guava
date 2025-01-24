@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { chain, chainId } from "@/app/chain";
 import { ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
@@ -23,7 +24,6 @@ export function getUSDCAddress() {
   return currentUSDCAddress;
 }
 
-("use client");
 export default function SelectChain() {
   const [activeChain, setActiveChain] = useState("CELO");
 
