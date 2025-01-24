@@ -24,7 +24,7 @@ export function getUSDCAddress() {
 }
 
 export default function SelectChain() {
-  "use client";
+
   const [activeChain, setActiveChain] = useState("CELO");
 
   const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {

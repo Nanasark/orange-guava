@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import { ConnectButton } from "thirdweb/react";
 import { client } from "@/app/client";
