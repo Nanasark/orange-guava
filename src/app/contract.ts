@@ -1,19 +1,25 @@
 import { getContract } from "thirdweb";
-import { Strings } from "./strings";
 import { client } from "./client";
-import { chain } from "./chain";
+import {
+  getSelectedChain,
+  getContractAddress,
+  getUSDCAddress,
+} from "@/components/SelectChain";
 import { ICOABI } from "./abi";
+const selectedChain = getSelectedChain();
+const selectedContractAddress = getContractAddress();
+const selectedTokenAddress = getUSDCAddress();
 
 export const contract = getContract({
-  address: Strings.contractAddress,
-  chain: chain,
+  address: selectedContractAddress,
+  chain: selectedChain,
   client: client,
   abi: ICOABI,
 });
 
 export const tokenContract = getContract({
-  address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359",
+  address: selectedTokenAddress,
   // "0x61db8048005919076645c82bB871ee321366Dd31",
-  chain: chain,
+  chain: selectedChain,
   client: client,
 });

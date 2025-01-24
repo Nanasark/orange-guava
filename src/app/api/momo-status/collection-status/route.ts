@@ -1,11 +1,15 @@
-import { chainId } from "@/app/chain";
 import { NextRequest, NextResponse } from "next/server";
 // import { toWei } from "thirdweb";
 import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
-
+import {
+  getSelectedChainId,
+  getContractAddress,
+} from "@/components/SelectChain";
+const chainId = getSelectedChainId();
+const ContractAddress = getContractAddress();
 interface ChainResponse {
   result: {
     queueId: string;
@@ -159,7 +163,6 @@ async function processTransaction(
     // const amount = parseFloat(cediAmount) / pricePerToken;
     // const bigintAmount = toUwei(`${amount}`);
     const sendingAmount = calculateSendingAmount(cediAmount, pricePerToken);
-    
 
     await supabase
       .from("collection")
@@ -168,7 +171,7 @@ async function processTransaction(
 
     if (txStatus === 1) {
       const tx = await fetch(
-        `${ENGINE_URL}/contract/${chainId}/${NEXT_PUBLIC_ICO_CONTRACT}/write`,
+        `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
         {
           method: "POST",
           headers: {

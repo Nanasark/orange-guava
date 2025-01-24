@@ -4,6 +4,7 @@ import { client } from "@/app/client";
 import { polygonAmoy } from "thirdweb/chains";
 import Link from "next/link";
 import ConnectWallet from "./connectWallet";
+import SelectChain from "./SelectChain";
 
 export default function Header() {
   return (
@@ -13,6 +14,7 @@ export default function Header() {
           <h1 className="text-xl font-bold">Crypto Exchange</h1>
         </div>
         <nav className="flex flex-wrap items-center justify-center gap-4">
+          <SelectChain />
           <Link
             href="/"
             className="text-white hover:text-blue-200 transition-colors"
