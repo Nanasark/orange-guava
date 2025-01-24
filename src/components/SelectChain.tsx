@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 import { chain, chainId } from "@/app/chain";
 import { ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
@@ -25,6 +24,7 @@ export function getUSDCAddress() {
 }
 
 export default function SelectChain() {
+  "use client";
   const [activeChain, setActiveChain] = useState("CELO");
 
   const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
