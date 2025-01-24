@@ -29,16 +29,6 @@ export default function Dashboard() {
     }
   }, [selectedChainSymbol, router]);
 
-  return (
-    <div>
-      <p>Selected Chain: {selectedChainSymbol}</p>
-      {/* Your other component logic */}
-    </div>
-  );
-}
-
-export default YourComponent;
-
 
   // Handle loading, error, and display of merchants
   const renderMerchants = () => {
