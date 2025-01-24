@@ -8,11 +8,37 @@ import Link from "next/link";
 import { contract } from "./contract";
 import { useReadContract } from "thirdweb/react";
 import { useMerchantsData } from "@/hooks/useMerchantsData";
+  import { useEffect } from "react";
+import { useRouter } from "next/router";
+import {useChain} from "@/context/ChainProvider"
 
 export default function Dashboard() {
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
+    const {  selectedChainSymbol,selectedChain, selectedChainId, contractAddress, usdcAddress, updateChain } = useChain();
 
   const { allMerchants, isLoading, error } = useMerchantsData();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (selectedChainSymbol) {
+      // Option 1: Reload the page while maintaining the query parameters
+      router.replace(router.asPath);
+      
+      // Option 2: Full page reload (not recommended for SPA)
+      // window.location.reload();
+    }
+  }, [selectedChainSymbol, router]);
+
+  return (
+    <div>
+      <p>Selected Chain: {selectedChainSymbol}</p>
+      {/* Your other component logic */}
+    </div>
+  );
+}
+
+export default YourComponent;
+
 
   // Handle loading, error, and display of merchants
   const renderMerchants = () => {
