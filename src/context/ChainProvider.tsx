@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { ChainOptions } from "thirdweb/chains";
 import { ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
 import { chain, chainId } from "@/app/chain";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 
 type ChainContextType = {
   selectedChain: Readonly<ChainOptions & { rpc: string }>;
