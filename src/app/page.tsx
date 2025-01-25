@@ -26,7 +26,7 @@ export default function Dashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    if (selectedChainSymbol) {
+  
       // Option 1: Reload the page while maintaining the query parameters
       router.refresh();
 
@@ -34,7 +34,7 @@ export default function Dashboard() {
 
       // Option 2: Full page reload (not recommended for SPA)
       // window.location.reload();
-    }
+
   }, [selectedChainSymbol, router]);
 
   // Handle loading, error, and display of merchants
