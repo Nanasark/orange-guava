@@ -22,6 +22,9 @@ export default function Dashboard() {
     if (selectedChainSymbol) {
       // Option 1: Reload the page while maintaining the query parameters
       router.refresh()
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
       
       // Option 2: Full page reload (not recommended for SPA)
       // window.location.reload();
