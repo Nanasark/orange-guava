@@ -21,7 +21,7 @@ export default function Dashboard() {
   useEffect(() => {
     if (selectedChainSymbol) {
       // Option 1: Reload the page while maintaining the query parameters
-      router.replace(router.asPath);
+      router.refresh()
       
       // Option 2: Full page reload (not recommended for SPA)
       // window.location.reload();
