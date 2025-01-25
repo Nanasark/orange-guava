@@ -24,17 +24,8 @@ export default function Dashboard() {
 
   const { allMerchants, isLoading, error } = useMerchantsData();
   const router = useRouter();
-
   useEffect(() => {
-  
-      // Option 1: Reload the page while maintaining the query parameters
-      router.refresh();
-
-      window.location.reload();
-
-      // Option 2: Full page reload (not recommended for SPA)
-      // window.location.reload();
-
+    router.refresh();
   }, [selectedChainSymbol, router]);
 
   // Handle loading, error, and display of merchants
