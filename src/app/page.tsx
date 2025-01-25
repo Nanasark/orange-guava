@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import BuyCryptoCard from "../components/BuyCryptoCard";
 import SellCryptoCard from "../components/SellCryptoCard";
@@ -8,9 +8,8 @@ import Link from "next/link";
 import { contract } from "./contract";
 import { useReadContract } from "thirdweb/react";
 import { useMerchantsData } from "@/hooks/useMerchantsData";
-  import { useEffect } from "react";
-import { useRouter } from "next/router";
 import {useChain} from "@/context/ChainProvider"
+import  {useRouter} from "next/navigation"
 
 export default function Dashboard() {
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
