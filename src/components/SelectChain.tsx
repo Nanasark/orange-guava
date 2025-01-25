@@ -9,6 +9,7 @@ export default function SelectChain() {
   const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newChain = event.target.value;
     updateChain(newChain);
+      window.location.reload();
   };
 
   return (
