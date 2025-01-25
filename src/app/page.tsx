@@ -23,10 +23,8 @@ export default function Dashboard() {
   } = useChain();
 
   const { allMerchants, isLoading, error } = useMerchantsData();
-  const router = useRouter();
-  useEffect(() => {
-    window.location.reload();
-  }, [selectedChainSymbol]);
+ 
+
 
   // Handle loading, error, and display of merchants
   const renderMerchants = () => {
