@@ -15,34 +15,57 @@ interface BuyCryptoCardProps {
 }
 
 export default function BuyCryptoCard({ merchant }: BuyCryptoCardProps) {
-    const {  selectedChainSymbol,selectedChain, selectedChainId, contractAddress, usdcAddress, updateChain } = useChain();
+  const {
+    selectedChainSymbol,
+    selectedChain,
+    selectedChainId,
+    contractAddress,
+    usdcAddress,
+    updateChain,
+  } = useChain();
 
   const [merchantInfo, setMerchantInfo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
   useEffect(() => {
+    // Prevent fetching if merchantAddress or selectedChainSymbol is missing
+    if (!merchant?.merchantAddress || !selectedChainSymbol) return;
+
     async function fetchMerchantData() {
       try {
+        // Fetch data from the API
         const response = await fetch(
           `/api/merchant/details/${merchant.merchantAddress}`
         );
+
+        // Log the response for debugging
+        console.log("API response:", response);
+
+        // Handle non-OK HTTP responses
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
+
+        // Log the data for debugging
+        console.log("Merchant data fetched:", data);
 
         if (data.error) {
           throw new Error(data.error);
         }
 
+        // Update state with fetched merchant info
         setMerchantInfo(data.merchant);
-        console.log("merchant data", data);
       } catch (error) {
         console.error("Error fetching merchant or network data:", error);
       } finally {
+        // Ensure loading is set to false regardless of success or failure
         setLoading(false);
       }
     }
 
     fetchMerchantData();
-  }, [merchant,selectedChainSymbol]);
+  }, [merchant?.merchantAddress, selectedChainSymbol]); // Add merchant.merchantAddress and selectedChainSymbol as dependencies
 
   if (loading) {
     return <div>Loading...</div>;
