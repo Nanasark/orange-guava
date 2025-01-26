@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { ChainOptions } from "thirdweb/chains";
 import Cookies from "js-cookie";
+import { cookies } from "next/headers";
 import { getChainInfo } from "@/utils/getChainInfo";
 
 type ChainContextType = {
@@ -17,18 +18,16 @@ type ChainContextType = {
 const ChainContext = createContext<ChainContextType | undefined>(undefined);
 
 export function ChainProvider({ children }: { children: React.ReactNode }) {
-  const [selectedChainSymbol, setSelectedChainSymbol] = useState(
-    () => Cookies.get("selectedChainSymbol") || "CELO"
-  );
+  const [selectedChainSymbol, setSelectedChainSymbol] = useState("");
 
   const updateChain = (chainName: string) => {
     setSelectedChainSymbol(chainName);
-    // Sync with cookies
-    Cookies.set("selectedChainSymbol", chainName, { expires: 7 });
+    Cookies.set("selectedChainSymbol", chainName, { path: "/", expires: 7 }); // Cookie expires in 7 days
   };
 
   useEffect(() => {
     const storedChain = Cookies.get("selectedChainSymbol");
+
     if (storedChain) {
       updateChain(storedChain);
     }

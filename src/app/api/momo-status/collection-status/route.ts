@@ -6,9 +6,9 @@ import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
 import Cookies from "js-cookie";
 import { getChainInfo } from "@/utils/getChainInfo";
-const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
+import { cookies } from "next/headers";
 // Derive other chain details
-const { ContractAddress, chainId } = getChainInfo(selectedChainSymbol);
+
 interface ChainResponse {
   result: {
     queueId: string;
@@ -85,6 +85,7 @@ if (
 export async function POST(req: NextRequest) {
   try {
     const body: Payload = await req.json();
+
     console.log("Received callback payload:", body);
 
     if (body.data.txstatus !== 1) {
@@ -169,6 +170,10 @@ async function processTransaction(
       .eq("transactionId", transactionId);
 
     if (txStatus === 1) {
+      const cookieStore = await cookies();
+      const selectedChainSymbol =
+        cookieStore.get("selectedChainSymbol")?.value || "None";
+      const { ContractAddress, chainId } = getChainInfo(selectedChainSymbol);
       const tx = await fetch(
         `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
         {
