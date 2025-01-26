@@ -16,7 +16,8 @@ import {
 } from "thirdweb";
 import { allowance, approve } from "thirdweb/extensions/erc20";
 import { Strings } from "../strings";
-import { contract, tokenContract } from "../contract";
+import { getContracts } from "../contract";
+import { useChain } from "@/context/ChainProvider";
 import { toUSDC, toUwei } from "@/utils/conversions";
 
 export default function Profile() {
@@ -33,6 +34,8 @@ export default function Profile() {
     Account = account;
   }
 
+  const { selectedChainSymbol } = useChain();
+  const { tokenContract, contract } = getContracts(selectedChainSymbol);
   const walletAddress = address;
 
   // const {
