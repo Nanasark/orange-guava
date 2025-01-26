@@ -84,6 +84,12 @@ if (
 
 export async function POST(req: NextRequest) {
   try {
+    const cookieStore = req.cookies;
+    const selectedChainSymbol = cookieStore.get("selectedChainSymbol");
+    let chainSymbol;
+    if (selectedChainSymbol) {
+      chainSymbol = selectedChainSymbol;
+    }
     const body: Payload = await req.json();
 
     console.log("Received callback payload:", body);
@@ -113,7 +119,12 @@ export async function POST(req: NextRequest) {
     if (body.status == 1) {
       // console.log("Status data retrieved successfully:", statusData);
 
-      await processTransaction(body, body.status, body.data.externalref);
+      await processTransaction(
+        body,
+        body.status,
+        body.data.externalref,
+        chainSymbol
+      );
 
       return NextResponse.json({
         success: true,
@@ -138,7 +149,8 @@ export async function POST(req: NextRequest) {
 async function processTransaction(
   statusData: Payload,
   txStatus: number,
-  transactionId: string
+  transactionId: string,
+  chainInfo: any
 ) {
   try {
     const { data, error } = await supabase
@@ -171,9 +183,8 @@ async function processTransaction(
 
     if (txStatus === 1) {
       const cookieStore = await cookies();
-      const selectedChainSymbol =
-        cookieStore.get("selectedChainSymbol")?.value || "None";
-      const { ContractAddress, chainId } = getChainInfo(selectedChainSymbol);
+      const selectedChainSymbol = cookieStore.get("selectedChainSymbol")?.value;
+      const { ContractAddress, chainId } = getChainInfo(chainInfo);
       const tx = await fetch(
         `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
         {

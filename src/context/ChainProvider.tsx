@@ -22,7 +22,11 @@ export function ChainProvider({ children }: { children: React.ReactNode }) {
 
   const updateChain = (chainName: string) => {
     setSelectedChainSymbol(chainName);
-    Cookies.set("selectedChainSymbol", chainName, { path: "/", expires: 7 }); // Cookie expires in 7 days
+    Cookies.set("selectedChainSymbol", chainName, {
+      path: "/",
+      expires: 7,
+      secure: true,
+    }); // Cookie expires in 7 days
   };
 
   useEffect(() => {
