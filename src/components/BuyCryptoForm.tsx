@@ -17,6 +17,7 @@ import generateIdempotencyKey from "../utils/generateIdempotencykey";
 import getChannel from "@/utils/getChannel";
 import StatusModal from "./statusModal";
 import { calculateTotalAmount } from "@/utils/calculateFee";
+import { useChain } from "@/context/ChainProvider";
 
 interface BuyCryptoFormProps {
   merchantAddress: string;
@@ -54,7 +55,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
   >("pending");
   const [transactionId, setTransactionId] = useState<string | null>(null);
 
-  const formattedPhone = formatPhoneNumber(phoneNumber);
+  const { selectedChainSymbol } = useChain();
   // const ghsRate = "5";
   // const payingAmount = (Number(amount) * parseFloat(ghsRate)).toString();
   const feeConfig: FeeConfig = {
@@ -141,6 +142,7 @@ export default function BuyCryptoForm({ merchantAddress }: BuyCryptoFormProps) {
           reference: reference,
           address: walletAddress,
           merchantAddress: merchantAddress,
+          chainName: selectedChainSymbol,
         }),
       });
       const responsData = await response.json();
