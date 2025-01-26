@@ -4,9 +4,8 @@ import { toUwei } from "@/utils/conversions";
 import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
-import Cookies from "js-cookie";
 import { getChainInfo } from "@/utils/getChainInfo";
-import { cookies } from "next/headers";
+
 // Derive other chain details
 
 interface ChainResponse {
@@ -84,12 +83,7 @@ if (
 
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = req.cookies;
-    const selectedChainSymbol = cookieStore.get("selectedChainSymbol");
-    let chainSymbol;
-    if (selectedChainSymbol) {
-      chainSymbol = selectedChainSymbol;
-    }
+
     const body: Payload = await req.json();
 
     console.log("Received callback payload:", body);
@@ -123,7 +117,7 @@ export async function POST(req: NextRequest) {
         body,
         body.status,
         body.data.externalref,
-        chainSymbol
+       
       );
 
       return NextResponse.json({
@@ -150,12 +144,12 @@ async function processTransaction(
   statusData: Payload,
   txStatus: number,
   transactionId: string,
-  chainInfo: any
+
 ) {
   try {
     const { data, error } = await supabase
       .from("collection")
-      .select("address, merchantAddress")
+      .select("address, merchantAddress, chainName")
       .eq("transactionId", transactionId)
       .single();
 
@@ -163,9 +157,11 @@ async function processTransaction(
       throw new Error(`Supabase error: ${error.message}`);
     }
 
+
     const address = data?.address;
     const merchantAddress = data?.merchantAddress;
-
+    const chainName =data?.chainName
+   
     if (!isAddress(address)) {
       throw new Error("invalid address provided");
     }
@@ -182,9 +178,8 @@ async function processTransaction(
       .eq("transactionId", transactionId);
 
     if (txStatus === 1) {
-      const cookieStore = await cookies();
-      const selectedChainSymbol = cookieStore.get("selectedChainSymbol")?.value;
-      const { ContractAddress, chainId } = getChainInfo(chainInfo);
+      console.log("chainName",chainName)
+      const { ContractAddress, chainId } = getChainInfo(chainName);
       const tx = await fetch(
         `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
         {

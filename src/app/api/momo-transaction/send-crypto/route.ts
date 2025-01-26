@@ -11,6 +11,7 @@ interface RequestData {
   merchantAddress: string;
   phoneNumber: string;
   reference: string;
+  chainName:string
 }
 
 const {
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
       merchantAddress,
       channel,
       phoneNumber,
+      chainName
     } = data;
     console.log(TRANSACT_SECRET_KEY);
     const response = await fetch(
@@ -84,6 +86,7 @@ export async function POST(request: NextRequest) {
         address: `${address}`,
         amount: `GHS ${amount}`,
         merchantAddress: `${merchantAddress}`,
+        chainName,
         txstatus: 1,
       };
 
