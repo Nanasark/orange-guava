@@ -10,9 +10,11 @@ import {
   prepareContractCall,
   sendTransaction,
   PreparedTransaction,
+ 
 } from "thirdweb";
 import { approve, allowance } from "thirdweb/extensions/erc20";
-import { contract, tokenContract } from "@/app/contract";
+import { getContracts } from "@/app/contract";
+import { useChain } from "@/context/ChainProvider";
 import { Account } from "thirdweb/wallets";
 import { baseUrl } from "@/app/strings";
 import { formatPhoneNumber } from "../utils/phoneNumber";
@@ -36,6 +38,10 @@ interface EventArgs {
 export default function SellCryptoForm({
   merchantAddress,
 }: SellCryptoFormProps) {
+  const { selectedChainSymbol } = useChain()
+  const {
+    tokenContract,contrac
+  } = getContracts(selectedChainSymbol)
   const account = useActiveAccount();
   const address = account ? account.address : "";
   let Account: Account;

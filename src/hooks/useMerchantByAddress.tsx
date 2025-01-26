@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useReadContract } from "thirdweb/react";
-import { contract } from "@/app/contract";
+import { getContracts } from "@/app/contract";
 import { toUSDC } from "@/utils/conversions";
+import { useChain } from "@/context/ChainProvider";
 
 interface Merchant {
   isRegistered: boolean;
@@ -11,6 +12,8 @@ interface Merchant {
 }
 
 export const useMerchantsByAddress = (address: string) => {
+  const {selectedChainSymbol}= useChain()
+  const {contract} = getContracts(selectedChainSymbol) 
   const [merchant, setMerchant] = useState<Merchant>();
   const {
     data: merchantData,

@@ -7,7 +7,7 @@ import BuyCryptoForm from "../../../components/BuyCryptoForm";
 import SellCryptoForm from "../../../components/SellCryptoForm";
 import { MerchantInfo } from "@/utils/merchant.type";
 import { useMerchantsByAddress } from "@/hooks/useMerchantByAddress";
-import { contract } from "@/app/contract";
+
 
 export default function MerchantDetails() {
   const { address: merchantId } = useParams(); // Get merchantId from the URL params
