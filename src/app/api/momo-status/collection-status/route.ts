@@ -5,13 +5,10 @@ import { isAddress } from "thirdweb";
 import { supabase } from "@/utils/supabase-server";
 import { calculateSendingAmount } from "@/utils/calculateSendingAmount";
 import Cookies from "js-cookie";
-import {chainId} from "@/app/chain"
-import {  ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
+import { getChainInfo } from "@/utils/getChainInfo";
 const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
-  // Derive other chain details
-  const chainIdValue = chainId(selectedChainSymbol);
-  const contractAddress = ContractAddress(selectedChainSymbol);
-  const usdcAddress = USDCAddress(selectedChainSymbol);
+// Derive other chain details
+const { ContractAddress, chainId } = getChainInfo(selectedChainSymbol);
 interface ChainResponse {
   result: {
     queueId: string;
@@ -173,7 +170,7 @@ async function processTransaction(
 
     if (txStatus === 1) {
       const tx = await fetch(
-        `${ENGINE_URL}/contract/${chainIdValue}/${contractAddress}/write`,
+        `${ENGINE_URL}/contract/${chainId}/${ContractAddress}/write`,
         {
           method: "POST",
           headers: {

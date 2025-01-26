@@ -5,23 +5,17 @@ import { FaToggleOn, FaToggleOff } from "react-icons/fa";
 import BuyCryptoCard from "../components/BuyCryptoCard";
 import SellCryptoCard from "../components/SellCryptoCard";
 import Link from "next/link";
-import { contract } from "./contract";
-import { useReadContract } from "thirdweb/react";
 import { useMerchantsData } from "@/hooks/useMerchantsData";
-  import { useEffect } from "react";
-import { useRouter } from "next/router";
-import {useChain} from "@/context/ChainProvider"
+import { useEffect } from "react";
+import { useChain } from "@/context/ChainProvider";
 
 export default function Dashboard() {
   const [isBuyCrypto, setIsBuyCrypto] = useState(true);
+  const { selectedChainSymbol } = useChain();
 
-  const { allMerchants, isLoading, error } = useMerchantsData();
+  const { allMerchants, isLoading, error } =
+    useMerchantsData(selectedChainSymbol);
 
-
-
-
-
-  // Handle loading, error, and display of merchants
   const renderMerchants = () => {
     if (isLoading) {
       return <div>Loading merchants...</div>;
@@ -33,6 +27,7 @@ export default function Dashboard() {
       return <div>No merchants available.</div>;
     }
   };
+
   console.log(allMerchants[0]);
   console.log(allMerchants.length);
   return (

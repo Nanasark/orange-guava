@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useReadContract } from "thirdweb/react";
-import { contract } from "@/app/contract";
+import { getContracts } from "@/app/contract";
 import { toUSDC } from "@/utils/conversions";
 
 interface Merchant {
@@ -10,7 +10,8 @@ interface Merchant {
   merchantAddress: string;
 }
 
-export const useMerchantsData = () => {
+export const useMerchantsData = (chainName: string) => {
+  const {contract} = getContracts(chainName)
   const [allMerchants, setAllMerchants] = useState<Merchant[]>([]);
   const {
     data: merchants,
@@ -32,7 +33,7 @@ export const useMerchantsData = () => {
       }));
       setAllMerchants(formattedMerchants);
     }
-  }, [merchants, error]);
+  }, [merchants, error, chainName]);
 
   return {
     allMerchants,

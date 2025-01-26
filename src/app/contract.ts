@@ -1,24 +1,24 @@
 import { getContract } from "thirdweb";
 import { client } from "./client";
 import Cookies from "js-cookie";
-import { ContractAddress, USDCAddress } from "@/utils/getChainAddresses";
-import {chain, chainId} from "./chain"
+import { getChainInfo } from "@/utils/getChainInfo";
 import { ICOABI } from "./abi";
- const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
-const selectedChain = chain(selectedChainSymbol)
-const selectedContractAddress = ContractAddress(selectedChainSymbol);
-const selectedTokenAddress = USDCAddress(selectedChainSymbol)
+const selectedChainSymbol = Cookies.get("selectedChainSymbol") || "CELO";
 
-export const contract = getContract({
-  address: selectedContractAddress,
-  chain: selectedChain,
-  client: client,
-  abi: ICOABI,
-});
+export function getContracts(chainName: string) {
+  const { ContractAddress, USDCAddress, chain } = getChainInfo(chainName);
+  const contract = getContract({
+    address: ContractAddress,
+    chain: chain,
+    client: client,
+    abi: ICOABI,
+  });
 
-export const tokenContract = getContract({
-  address: selectedTokenAddress,
-  // "0x61db8048005919076645c82bB871ee321366Dd31",
-  chain: selectedChain,
-  client: client,
-});
+  const tokenContract = getContract({
+    address: USDCAddress,
+    // "0x61db8048005919076645c82bB871ee321366Dd31",
+    chain: chain,
+    client: client,
+  });
+  return { contract, tokenContract };
+}

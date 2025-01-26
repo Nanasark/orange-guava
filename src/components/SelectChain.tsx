@@ -2,16 +2,16 @@
 
 import React from "react";
 import { useChain } from "@/context/ChainProvider";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 
 export default function SelectChain() {
-  const {  selectedChainSymbol,selectedChain, selectedChainId, contractAddress, usdcAddress, updateChain } = useChain();
+  const { selectedChainSymbol, ContractAddress, USDCAddress, updateChain } =
+    useChain();
 
   const handleChainChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newChain = event.target.value;
-     Cookies.set("selectedChainSymbol", newChain, { expires: 7 })
+    Cookies.set("selectedChainSymbol", newChain, { expires: 7 });
     updateChain(newChain);
-      window.location.reload();
   };
 
   return (
@@ -31,8 +31,7 @@ export default function SelectChain() {
           <option value="SCROLL">SCROLL</option>
         </select>
       </div>
-      <div className="mt-4">
-      </div>
+      <div className="mt-4"></div>
     </div>
   );
 }
