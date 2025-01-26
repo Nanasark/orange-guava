@@ -1,27 +1,20 @@
 import { client } from "@/app/client";
 import { ConnectButton } from "thirdweb/react";
-import {useChain} from "@/context/ChainProvider"
-
+import { useChain } from "@/context/ChainProvider";
 
 export default function ConnectWallet() {
-  const {
-    selectedChain,
-    selectedChainSymbol,
-    selectedChainId,
-    contractAddress,
-    usdcAddress,
-    updateChain,
-  } = useChain();
+  const { ContractAddress, selectedChainSymbol, USDCAddress, chain, chainId } =
+    useChain();
   return (
     <>
       <ConnectButton
         client={client}
-        chain={selectedChain}
+        chain={chain}
         supportedTokens={{
-          [selectedChainId]: [
+          [chainId]: [
             {
               name: "USD Coin",
-              address: usdcAddress,
+              address: USDCAddress,
               symbol: "USDC",
               icon: "/usdc.png",
             },

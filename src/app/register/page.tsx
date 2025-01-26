@@ -6,14 +6,16 @@ import Link from "next/link";
 import { formatPhoneNumber } from "@/utils/phoneNumber";
 import { prepareContractCall, PreparedTransaction } from "thirdweb";
 import { useSendTransaction, useActiveAccount } from "thirdweb/react";
-import { contract } from "../contract";
+import { getContracts } from "../contract";
+import { useChain } from "@/context/ChainProvider";
 import ConnectWallet from "@/components/connectWallet";
 import { isAddress } from "thirdweb";
 
 export default function Register() {
   const account = useActiveAccount();
   const address = account ? account.address : "";
-
+  const { selectedChainSymbol } = useChain();
+  const { tokenContract, contract } = getContracts(selectedChainSymbol);
   const {
     mutateAsync: sendTx,
     isSuccess,
