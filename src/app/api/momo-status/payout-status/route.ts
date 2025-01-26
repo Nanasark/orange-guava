@@ -1,4 +1,3 @@
-import { chainId } from "@/app/chain";
 // import TransactionStorage from "@/app/transactionStorage";
 import { NextRequest, NextResponse } from "next/server";
 import { toWei } from "thirdweb";
