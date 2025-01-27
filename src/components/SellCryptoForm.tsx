@@ -83,7 +83,7 @@ export default function SellCryptoForm({
     };
 
     fetchAllowance();
-  }, );
+  });
 
   const payoutId = getPayoutId({
     amount,
@@ -296,7 +296,7 @@ export default function SellCryptoForm({
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
-          disabled={loading || allowanceLoading}
+          disabled={loading}
         >
           <FaExchangeAlt className="mr-2" />
           {loading ? "Processing..." : "Sell Crypto"}
