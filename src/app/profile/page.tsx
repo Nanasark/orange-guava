@@ -87,7 +87,9 @@ export default function Profile() {
     }
   };
   useEffect(() => {
-    fetchAllowance();
+    if (tokenContract && stakeAmount && address) {
+      fetchAllowance();
+    }
   }, [address, tokenContract, stakeAmount]);
 
   const handleStake = async (e: React.FormEvent) => {
@@ -107,9 +109,7 @@ export default function Profile() {
 
         // Fetch updated allowance
         await fetchAllowance();
-      }
-
-      if (Number(stakeAmount) <= allowed) {
+      } else {
         const stake = prepareContractCall({
           contract,
           method: "stakeTokens",
