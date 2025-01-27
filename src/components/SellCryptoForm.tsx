@@ -83,7 +83,7 @@ export default function SellCryptoForm({
     };
 
     fetchAllowance();
-  }, [address, tokenContract]);
+  }, );
 
   const payoutId = getPayoutId({
     amount,
