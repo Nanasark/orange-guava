@@ -22,6 +22,7 @@ import { toUSDC, toUwei } from "@/utils/conversions";
 
 export default function Profile() {
   const [stakeAmount, setStakeAmount] = useState("");
+  const [approveAmount, setApproval] = useState("");
   const [unstakeAmount, setUnstakeAmount] = useState("");
   const [fiatAmount, setFiatAmount] = useState("");
   const account = useActiveAccount();
@@ -92,34 +93,36 @@ export default function Profile() {
     }
   }, [address, tokenContract, stakeAmount]);
 
+  const handleApprove = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const approval = approve({
+        contract: tokenContract,
+        spender: Strings.contractAddress,
+        amount: approveAmount,
+      });
+
+      console.log("Sending approval transaction:", approval);
+      await sendApproval(approval);
+      console.log("Approval successful");
+    } catch (error) {
+      console.error("Error in approval flow:", error);
+    }
+  };
+
   const handleStake = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      if (Number(stakeAmount) > allowed) {
-        const approval = approve({
-          contract: tokenContract,
-          spender: Strings.contractAddress,
-          amount: stakeAmount,
-        });
+      const stake = prepareContractCall({
+        contract,
+        method: "stakeTokens",
+        params: [toUwei(stakeAmount)],
+      }) as PreparedTransaction;
 
-        console.log("Sending approval transaction:", approval);
-        await sendApproval(approval);
-        console.log("Approval successful");
-
-        // Fetch updated allowance
-        await fetchAllowance();
-      } else {
-        const stake = prepareContractCall({
-          contract,
-          method: "stakeTokens",
-          params: [toUwei(stakeAmount)],
-        }) as PreparedTransaction;
-
-        console.log("Sending staking transaction:", stake);
-        await sendTransaction({ transaction: stake, account: Account });
-        console.log("Staking successful");
-      }
+      console.log("Sending staking transaction:", stake);
+      await sendTransaction({ transaction: stake, account: Account });
+      console.log("Staking successful");
     } catch (error) {
       console.error("Error in staking flow:", error);
     } finally {
@@ -226,6 +229,23 @@ export default function Profile() {
                   </button>
                 </div>
               </form>
+              <form onSubmit={handleApprove} className="mb-4">
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    value={approveAmount}
+                    onChange={(e) => setApproval(e.target.value)}
+                    placeholder="Amount to stake"
+                    className="flex-grow p-2 border text-blue-500  border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-blue-600 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
+                  >
+                    Stake
+                  </button>
+                </div>
+              </form>
 
               <form onSubmit={handleUnstake} className="mb-4">
                 <div className="flex items-center">
@@ -234,7 +254,7 @@ export default function Profile() {
                     value={unstakeAmount}
                     onChange={(e) => setUnstakeAmount(e.target.value)}
                     placeholder="Amount to unstake"
-                    className="flex-grow p-2 border border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+                    className="flex-grow p-2 border text-blue-500 border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
                   />
                   <button
                     type="submit"
@@ -268,7 +288,7 @@ export default function Profile() {
                   value={fiatAmount}
                   onChange={(e) => setFiatAmount(e.target.value)}
                   placeholder="Enter available fiat amount"
-                  className="w-full pl-10 p-2 border border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+                  className="w-full pl-10 p-2 border text-blue-500 border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
                 />
               </div>
               <button
