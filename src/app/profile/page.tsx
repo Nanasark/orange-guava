@@ -99,7 +99,7 @@ export default function Profile() {
       const approval = approve({
         contract: tokenContract,
         spender: Strings.contractAddress,
-        amount: approveAmount,
+        amountWei: toUwei(approveAmount),
       });
 
       console.log("Sending approval transaction:", approval);
@@ -212,23 +212,9 @@ export default function Profile() {
               <h2 className="text-xl font-semibold text-blue-600 mb-4">
                 Actions
               </h2>
-              <form onSubmit={handleStake} className="mb-4">
-                <div className="flex items-center">
-                  <input
-                    type="number"
-                    value={stakeAmount}
-                    onChange={(e) => setStakeAmount(e.target.value)}
-                    placeholder="Amount to stake"
-                    className="flex-grow p-2 border border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-blue-600 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
-                  >
-                    Stake
-                  </button>
-                </div>
-              </form>
+              <h2 className="text-[18px] font-semibold text-blue-600 mb-4">
+                You need to approve amount to stake
+              </h2>
               <form onSubmit={handleApprove} className="mb-4">
                 <div className="flex items-center">
                   <input
@@ -237,6 +223,23 @@ export default function Profile() {
                     onChange={(e) => setApproval(e.target.value)}
                     placeholder="Amount to stake"
                     className="flex-grow p-2 border text-blue-500  border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-green-500 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
+                  >
+                    Approve
+                  </button>
+                </div>
+              </form>
+              <form onSubmit={handleStake} className="mb-4">
+                <div className="flex items-center">
+                  <input
+                    type="number"
+                    value={stakeAmount}
+                    onChange={(e) => setStakeAmount(e.target.value)}
+                    placeholder="Amount to stake"
+                    className="flex-grow p-2 border border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
                   />
                   <button
                     type="submit"
