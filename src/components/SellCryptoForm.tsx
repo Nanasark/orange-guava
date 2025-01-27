@@ -112,13 +112,13 @@ export default function SellCryptoForm({
       }) as PreparedTransaction;
 
       await sendTransaction({ transaction: approval, account: Account });
+      alert(`approved to sell ${approveAmount} USDC`);
     } catch (error) {
       console.log(error);
     }
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (allowanceLoading) return; // Prevent submission during allowance fetch
     setLoading(true);
     setError(null);
 
