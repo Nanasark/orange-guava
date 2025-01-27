@@ -48,6 +48,7 @@ export default function SellCryptoForm({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [provider, setProvider] = useState("");
   const [amount, setAmount] = useState("");
+   const [approveAmount, setApproval] = useState("");
   const [allowed, setAllowed] = useState<number | null>(null); // Null to indicate loading state
   const [allowanceLoading, setAllowanceLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -102,6 +103,15 @@ export default function SellCryptoForm({
 
   const payout = "payout";
   const channel = getChannel(provider, payout);
+  const handleApprove = async (e: React.FormEvent) => {
+    const approval = approve({
+      contract: tokenContract,
+      spender: contract.address,
+      amountWei: toUwei(amount),
+    }) as PreparedTransaction;
+
+    await sendTransaction({ transaction: approval, account: Account });
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
@@ -109,15 +119,8 @@ export default function SellCryptoForm({
     setError(null);
 
     try {
-      if (allowed !== null && allowed < Number(amount)) {
-        const approval = approve({
-          contract: tokenContract,
-          spender: contract.address,
-          amountWei: toUwei(amount),
-        }) as PreparedTransaction;
-
-        await sendTransaction({ transaction: approval, account: Account });
-      } else {
+      
+        
         const transaction = (await prepareContractCall({
           contract,
           method: "buyFiatWithCrypto",
@@ -127,12 +130,7 @@ export default function SellCryptoForm({
         await sendTx(transaction);
 
         if (sellStatus === "success" || sellError === null) {
-          try {
-            // let cediAmount;
-            // if (data) {
-            //   cediAmount = Number(toUSDC(data.amount)) * 5;
-            // }
-
+         
             const response = fetch("/api/momo-transaction/send-fiat", {
               method: "POST",
               body: JSON.stringify({
@@ -149,9 +147,8 @@ export default function SellCryptoForm({
                 payerAddress: address,
               }),
             });
-          } catch (error) {}
+      
         }
-      }
 
       // console.log(allEventArgs);
     } catch (error) {
@@ -170,6 +167,26 @@ export default function SellCryptoForm({
     <div className="bg-white rounded-lg shadow-md p-6 border border-blue-200">
       <h2 className="text-xl font-semibold text-blue-600 mb-4">Sell Crypto</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <h2 className="text-[18px] font-semibold text-blue-600 mb-4">
+          You need to approve USDC amount to sell
+        </h2>
+        <form onSubmit={handleApprove} className="mb-4">
+          <div className="flex items-center">
+            <input
+              type="number"
+              value={approveAmount}
+              onChange={(e) => setApproval(e.target.value)}
+              placeholder="Amount to sell"
+              className="flex-grow p-2 border text-blue-500  border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
+            />
+            <button
+              type="submit"
+              className="bg-green-500 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
+            >
+              Approve
+            </button>
+          </div>
+        </form>
         <div>
           <label
             htmlFor="sellAmount"
@@ -283,10 +300,7 @@ export default function SellCryptoForm({
           <FaExchangeAlt className="mr-2" />
           {loading
             ? "Processing..."
-            : allowanceLoading
-            ? "Fetching Allowance..."
-            : allowed !== null && allowed < Number(amount)
-            ? "Approve Sell Amount"
+            
             : "Sell Crypto"}
         </button>
       </form>
