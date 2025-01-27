@@ -148,6 +148,10 @@ export default function SellCryptoForm({
             payerAddress: address,
           }),
         });
+
+        if ((await response).ok) {
+          alert("Transaction successful. please check your momo balance");
+        }
       }
 
       // console.log(allEventArgs);
