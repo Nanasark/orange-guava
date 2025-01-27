@@ -108,7 +108,7 @@ export default function SellCryptoForm({
       const approval = approve({
         contract: tokenContract,
         spender: contract.address,
-        amountWei: toUwei(amount),
+        amountWei: toUwei(approveAmount),
       }) as PreparedTransaction;
 
       await sendTransaction({ transaction: approval, account: Account });
