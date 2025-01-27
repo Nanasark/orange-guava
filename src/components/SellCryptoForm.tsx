@@ -48,7 +48,7 @@ export default function SellCryptoForm({
   const [phoneNumber, setPhoneNumber] = useState("");
   const [provider, setProvider] = useState("");
   const [amount, setAmount] = useState("");
-   const [approveAmount, setApproval] = useState("");
+  const [approveAmount, setApproval] = useState("");
   const [allowed, setAllowed] = useState<number | null>(null); // Null to indicate loading state
   const [allowanceLoading, setAllowanceLoading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -104,6 +104,7 @@ export default function SellCryptoForm({
   const payout = "payout";
   const channel = getChannel(provider, payout);
   const handleApprove = async (e: React.FormEvent) => {
+    e.preventDefault();
     const approval = approve({
       contract: tokenContract,
       spender: contract.address,
@@ -111,7 +112,7 @@ export default function SellCryptoForm({
     }) as PreparedTransaction;
 
     await sendTransaction({ transaction: approval, account: Account });
-  }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (allowanceLoading) return; // Prevent submission during allowance fetch
@@ -119,36 +120,32 @@ export default function SellCryptoForm({
     setError(null);
 
     try {
-      
-        
-        const transaction = (await prepareContractCall({
-          contract,
-          method: "buyFiatWithCrypto",
-          params: [Account.address, toUwei(amount), merchantAddress],
-        })) as PreparedTransaction;
+      const transaction = (await prepareContractCall({
+        contract,
+        method: "buyFiatWithCrypto",
+        params: [Account.address, toUwei(amount), merchantAddress],
+      })) as PreparedTransaction;
 
-        await sendTx(transaction);
+      await sendTx(transaction);
 
-        if (sellStatus === "success" || sellError === null) {
-         
-            const response = fetch("/api/momo-transaction/send-fiat", {
-              method: "POST",
-              body: JSON.stringify({
-                channel,
-                receiver: phoneNumber,
-                amount: buyingAmount,
-                payoutId,
-                reference,
-                sublistid: "",
-                currency: "GHS",
-                cdata: data,
-                callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
-                merchantAddress,
-                payerAddress: address,
-              }),
-            });
-      
-        }
+      if (sellStatus === "success" || sellError === null) {
+        const response = fetch("/api/momo-transaction/send-fiat", {
+          method: "POST",
+          body: JSON.stringify({
+            channel,
+            receiver: phoneNumber,
+            amount: buyingAmount,
+            payoutId,
+            reference,
+            sublistid: "",
+            currency: "GHS",
+            cdata: data,
+            callbackUrl: `${baseUrl}/api/momo-status/payout-status`,
+            merchantAddress,
+            payerAddress: address,
+          }),
+        });
+      }
 
       // console.log(allEventArgs);
     } catch (error) {
@@ -298,10 +295,7 @@ export default function SellCryptoForm({
           disabled={loading || allowanceLoading}
         >
           <FaExchangeAlt className="mr-2" />
-          {loading
-            ? "Processing..."
-            
-            : "Sell Crypto"}
+          {loading ? "Processing..." : "Sell Crypto"}
         </button>
       </form>
     </div>
