@@ -105,13 +105,17 @@ export default function SellCryptoForm({
   const channel = getChannel(provider, payout);
   const handleApprove = async (e: React.FormEvent) => {
     e.preventDefault();
-    const approval = approve({
-      contract: tokenContract,
-      spender: contract.address,
-      amountWei: toUwei(amount),
-    }) as PreparedTransaction;
+   try {
+     const approval = approve({
+       contract: tokenContract,
+       spender: contract.address,
+       amountWei: toUwei(amount),
+     }) as PreparedTransaction;
 
-    await sendTransaction({ transaction: approval, account: Account });
+     await sendTransaction({ transaction: approval, account: Account });
+   } catch (error) {
+    console.log(error)
+   }
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,7 +171,7 @@ export default function SellCryptoForm({
         <h2 className="text-[18px] font-semibold text-blue-600 mb-4">
           You need to approve USDC amount to sell
         </h2>
-        <form onSubmit={handleApprove} className="mb-4">
+        
           <div className="flex items-center">
             <input
               type="number"
@@ -176,14 +180,15 @@ export default function SellCryptoForm({
               placeholder="Amount to sell"
               className="flex-grow p-2 border text-blue-500  border-blue-200 rounded-l-md focus:ring-2 focus:ring-blue-300 focus:border-blue-300"
             />
-            <button
+          <button
+            onClick={handleApprove}
               type="submit"
               className="bg-green-500 text-white py-2 px-4 rounded-r-md hover:bg-blue-700 transition-colors duration-300"
             >
               Approve
             </button>
           </div>
-        </form>
+        
         <div>
           <label
             htmlFor="sellAmount"
