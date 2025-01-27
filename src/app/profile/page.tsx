@@ -98,7 +98,8 @@ export default function Profile() {
     try {
       const approval = approve({
         contract: tokenContract,
-        spender: Strings.contractAddress,
+        spender: contract.address
+        ,
         amountWei: toUwei(approveAmount),
       });
 
