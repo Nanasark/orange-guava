@@ -1,5 +1,8 @@
 import { ChainOptions } from "thirdweb/chains";
 import { polygon, scroll, celo } from "thirdweb/chains";
+import { defineChain } from "thirdweb";
+
+const lisk = defineChain(1135);
 
 interface ChainDetail {
   ContractAddress: string;
@@ -28,6 +31,13 @@ export function getChainInfo(chainName: string): ChainDetail {
       return {
         ContractAddress: "0x1AC513717801c2FD691db6302dCf9F9e4234f957",
         USDCAddress: "0xcebA9300f2b948710d2653dD7B07f33A8B32118C",
+        chain: lisk,
+        chainId: lisk.id,
+      };
+    case "LISK":
+      return {
+        ContractAddress: "0x650ECaF3beEe6fBdd86697d28232F66fc8c8C317",
+        USDCAddress: "0xF242275d3a6527d877f2c927a82D9b057609cc71",
         chain: celo,
         chainId: celo.id,
       };

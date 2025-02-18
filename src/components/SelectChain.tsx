@@ -29,6 +29,7 @@ export default function SelectChain() {
           <option value="CELO">CELO</option>
           <option value="POLYGON">POLYGON</option>
           <option value="SCROLL">SCROLL</option>
+          <option value="LISK">LISK</option>
         </select>
       </div>
       <div className="mt-4"></div>
